@@ -1,0 +1,6 @@
+{
+  "name": "ARASSTUDIO — Demo Interaktif Web & Produksi Digital",
+  "description": "Platform pembentangan dan demo laman web interaktif oleh ARASTECH / ARASSTUDIO untuk prospek korporat, studio kreatif, dan e-dagang.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
