@@ -5,56 +5,57 @@
 
 import React, { useState, useMemo } from 'react';
 import {
-  Building2,
-  ShieldCheck,
   Sparkles,
-  ShoppingBag,
-  Zap,
-  ArrowUpRight,
-  ArrowDownRight,
-  Check,
-  X,
-  Send,
-  RotateCcw,
-  Sliders,
   ChevronDown,
   ChevronUp,
-  BarChart3,
-  TrendingUp,
+  X,
+  MessageCircle,
+  Check,
+  ShieldCheck,
+  ArrowUpRight,
   Layout,
+  Building2,
+  ShoppingBag,
   Cpu,
-  Store,
+  Eye,
 } from 'lucide-react';
 
-type PresetKey = 'corporate' | 'creative' | 'ecommerce';
-type CatalogTabKey = 'all' | 'landing' | 'corporate' | 'ecommerce' | 'custom';
-type DashboardPeriod = '30d' | '12m';
-type PortfolioCategory = 'Semua' | 'Korporat' | 'Kreatif' | 'E-Dagang';
+type PresetType = 'corporate' | 'creative' | 'ecommerce';
+type CatalogCategory = 'all' | 'landing' | 'corporate' | 'ecommerce' | 'custom';
+type PortfolioCategory = 'all' | 'Korporat' | 'Kreatif' | 'E-Dagang';
 
-export interface CatalogProductItem {
-  id: string;
-  categoryKey: Exclude<CatalogTabKey, 'all'>;
-  categoryLabel: string;
+interface CatalogProduct {
+  id: number;
+  category: Exclude<CatalogCategory, 'all'>;
   badge: string;
-  name: string;
+  title: string;
   price: string;
   timeline: string;
+  pages: string;
   desc: string;
   features: string[];
-  iconName: 'Layout' | 'Building2' | 'ShoppingBag' | 'Cpu' | 'Zap' | 'Store';
-  featuredForPreset?: PresetKey;
 }
 
-// Senarai Katalog Pakej & Harga Rasmi ARASTECH / ARASSTUDIO
-export const CATALOG_PRODUCTS: CatalogProductItem[] = [
+interface CaseStudyItem {
+  id: number;
+  category: Exclude<PortfolioCategory, 'all'>;
+  client: string;
+  title: string;
+  metric: string;
+  challenge: string;
+  solution: string;
+  result: string;
+}
+
+const CATALOG_PRODUCTS: CatalogProduct[] = [
   {
-    id: 'pkg-landing-1',
-    categoryKey: 'landing',
-    categoryLabel: 'Landing Page / Simple',
-    badge: 'Paling Berbaloi',
-    name: 'Landing Page / Simple',
+    id: 1,
+    category: 'landing',
+    badge: 'Paling Popular',
+    title: 'Landing Page / Simple',
     price: 'RM500 – RM1,500',
-    timeline: 'Siap dalam 3–5 Hari Bekerja',
+    timeline: '3–5 Hari Bekerja',
+    pages: '1 Halaman Penuh (Single Page)',
     desc: 'Sesuai untuk kempen promosi, produk tunggal, atau profil perniagaan asas (1 Halaman).',
     features: [
       '1 Halaman Penuh (Single Page)',
@@ -63,17 +64,16 @@ export const CATALOG_PRODUCTS: CatalogProductItem[] = [
       'Asas SEO & Kelajuan Tinggi',
       'Siap dalam 3-5 Hari Berkerja',
     ],
-    iconName: 'Layout',
   },
   {
-    id: 'pkg-corporate-1',
-    categoryKey: 'corporate',
-    categoryLabel: 'Website Bisnes',
-    badge: 'Pilihan Utama PKS',
-    name: 'Website Perniagaan / Syarikat (3–10 Halaman)',
+    id: 2,
+    category: 'corporate',
+    badge: 'Pilihan PKS',
+    title: 'Website Perniagaan / Syarikat',
     price: 'RM1,500 – RM5,000',
-    timeline: 'Siap dalam 7–14 Hari Bekerja',
-    desc: 'Sesuai untuk PKS, agensi, atau perniagaan yang memerlukan 3 hingga 10 halaman.',
+    timeline: '7–14 Hari Bekerja',
+    pages: '3 hingga 10 Halaman Profesional',
+    desc: '3 hingga 10 halaman profesional merangkumi "Tentang Kami", "Perkhidmatan", & "Hubungi Kami".',
     features: [
       '3 hingga 10 Halaman Profesional',
       "Halaman 'Tentang Kami', 'Perkhidmatan', 'Hubungi'",
@@ -81,18 +81,16 @@ export const CATALOG_PRODUCTS: CatalogProductItem[] = [
       'Integrasi Media Sosial & Google Maps',
       'Sokongan & Latihan Percuma',
     ],
-    iconName: 'Building2',
-    featuredForPreset: 'corporate',
   },
   {
-    id: 'pkg-ecommerce-1',
-    categoryKey: 'ecommerce',
-    categoryLabel: 'E-Dagang / Store',
-    badge: 'Bisnes Online',
-    name: 'Website E-Dagang (Online Store)',
+    id: 3,
+    category: 'ecommerce',
+    badge: 'Online Store',
+    title: 'Website E-Dagang / Store',
     price: 'RM3,500 – RM10,000+',
-    timeline: 'Siap dalam 14–21 Hari Bekerja',
-    desc: 'Sesuai untuk kedai online dengan troli beli-belah & sistem pembayaran.',
+    timeline: '14–21 Hari Bekerja',
+    pages: 'Katalog Produk Tanpa Had',
+    desc: 'Kedai online lengkap dengan troli beli-belah & integrasi payment gateway (Billplz / ToyyibPay / iPay88).',
     features: [
       'Produk Tanpa Had / Mengikut Kapasiti',
       'Sistem Troli Belanja & Checkout',
@@ -100,18 +98,16 @@ export const CATALOG_PRODUCTS: CatalogProductItem[] = [
       'Pengurusan Pesanan & Inventori',
       'Jaminan Keselamatan SSL & Perlindungan Data',
     ],
-    iconName: 'ShoppingBag',
-    featuredForPreset: 'ecommerce',
   },
   {
-    id: 'pkg-custom-1',
-    categoryKey: 'custom',
-    categoryLabel: 'Custom & Sistem',
-    badge: 'Advanced / Enterprise',
-    name: 'Website Custom / Sistem Web Lanjutan',
+    id: 4,
+    category: 'custom',
+    badge: 'Advanced System',
+    title: 'Website Custom / Sistem Web',
     price: 'RM8,000 – RM20,000+',
-    timeline: 'Mengikut Skop & Spesifikasi',
-    desc: 'Sesuai untuk sistem tempahan khas, portal keahlian, atau aplikasi web.',
+    timeline: 'Mengikut Spesifikasi',
+    pages: 'Sistem & Pangkalan Data Kustom',
+    desc: 'Sistem tempahan khas (booking system), portal keahlian, atau aplikasi web berprestasi tinggi.',
     features: [
       'Sistem Tempahan Khas (Booking System)',
       'Portal Keahlian (Membership Portal)',
@@ -119,742 +115,452 @@ export const CATALOG_PRODUCTS: CatalogProductItem[] = [
       'Pangkalan Data Berprestasi Tinggi',
       'Konsultasi Teknikal & Penyelenggaraan Penuh',
     ],
-    iconName: 'Cpu',
-  },
-  {
-    id: 'pkg-landing-creative',
-    categoryKey: 'landing',
-    categoryLabel: 'Landing Page / Simple',
-    badge: 'Kempen & Visual AI',
-    name: 'Landing Page Kempen + Produksi Visual AI',
-    price: 'RM500 – RM1,500',
-    timeline: 'Siap dalam 3–5 Hari Bekerja',
-    desc: 'Halaman promosi berkonversi tinggi dengan integrasi aset visual/video AI dan simulator tempahan WhatsApp.',
-    features: [
-      '1 Halaman Kempen Direct-Response',
-      'Paparan Showreel / Visual Promosi AI',
-      'Simulator Tempahan Terus ke WhatsApp',
-      'Pemasangan Meta Pixel & TikTok Pixel',
-      'Optimasi Kelajuan Mudah Alih (< 0.8s)',
-    ],
-    iconName: 'Zap',
-    featuredForPreset: 'creative',
-  },
-  {
-    id: 'pkg-ecommerce-catalog',
-    categoryKey: 'ecommerce',
-    categoryLabel: 'E-Dagang / Store',
-    badge: 'Katalog Interaktif',
-    name: 'Katalog Digital E-Dagang & WhatsApp Commerce',
-    price: 'RM3,500 – RM10,000+',
-    timeline: 'Siap dalam 10–18 Hari Bekerja',
-    desc: 'Sistem katalog produk minimalis dengan tab kategori pantas, pilihan pakej, dan checkout FPX / WhatsApp.',
-    features: [
-      'Bar Tab Kategori Produk Interaktif',
-      'Troli Belanja & Checkout Pantas FPX',
-      'Integrasi Billplz / ToyyibPay / Ipay88',
-      'Simulator Pesanan Terus ke WhatsApp Jualan',
-      'Papan Pemuka Urus Stok & Laporan Jualan',
-    ],
-    iconName: 'Store',
   },
 ];
 
-const CATALOG_TABS: { key: CatalogTabKey; label: string }[] = [
-  { key: 'all', label: 'Semua' },
-  { key: 'landing', label: 'Landing Page / Simple' },
-  { key: 'corporate', label: 'Website Bisnes' },
-  { key: 'ecommerce', label: 'E-Dagang / Store' },
-  { key: 'custom', label: 'Custom & Sistem' },
-];
-
-interface PresetConfig {
-  id: PresetKey;
-  label: string;
-  badgeDesc: string;
-  kicker: string;
-  heroTitle: string;
-  heroSub: string;
-  primaryCtaText: string;
-  defaultPackageLabel: string;
-  stats: { value: string; label: string }[];
-  dashboard: {
-    '30d': {
-      traffic: string;
-      trafficDelta: string;
-      leads: string;
-      leadsDelta: string;
-      conversion: string;
-      conversionDelta: string;
-      caption: string;
-      bars: { label: string; height: number; val: string }[];
-    };
-    '12m': {
-      traffic: string;
-      trafficDelta: string;
-      leads: string;
-      leadsDelta: string;
-      conversion: string;
-      conversionDelta: string;
-      caption: string;
-      bars: { label: string; height: number; val: string }[];
-    };
-  };
-}
-
-interface CaseStudy {
-  id: number;
-  category: Exclude<PortfolioCategory, 'Semua'>;
-  year: string;
-  clientSector: string;
-  title: string;
-  headlineMetric: string;
-  secondaryMetric: string;
-  challenge: string;
-  solution: string;
-  result: string;
-}
-
-const PRESETS: Record<PresetKey, PresetConfig> = {
-  corporate: {
-    id: 'corporate',
-    label: 'Korporat & Servis',
-    badgeDesc: 'Tema Cerah · Biru Navy · Profesional',
-    kicker: 'Korporat & Servis · Katalog Solusi Web & Sistem B2B',
-    heroTitle:
-      'Infrastruktur Web Korporat & Katalog Servis yang Membina Kepercayaan Klien',
-    heroSub:
-      'memperkukuh reputasi digital melalui portal syarikat yang berautoriti, katalog perkhidmatan yang tersusun, dan sistem sebut harga terus ke WhatsApp.',
-    primaryCtaText: 'Terokai Katalog Servis',
-    defaultPackageLabel: 'Website Perniagaan / Syarikat (3–10 Halaman) (RM1,500 – RM5,000)',
-    stats: [
-      { value: '99.98%', label: 'Jaminan Kestabilan Pelayan & SLA' },
-      { value: '0.68s', label: 'Purata Masa Muat Halaman Katalog' },
-      { value: '+165%', label: 'Peningkatan Pertanyaan Sebut Harga' },
-      { value: '100%', label: 'Pemilikan Penuh Kod & Aset Digital' },
-    ],
-    dashboard: {
-      '30d': {
-        traffic: '48,290',
-        trafficDelta: '+34.2% vs bulan lalu',
-        leads: '642',
-        leadsDelta: '+58.0% prospek layak',
-        conversion: '4.85%',
-        conversionDelta: '+2.1x ROI',
-        caption: 'Julat Data: 30 Hari Terakhir (Minggu 1 – Minggu 4)',
-        bars: [
-          { label: 'M1', height: 44, val: '112' },
-          { label: 'M2', height: 58, val: '148' },
-          { label: 'M3', height: 76, val: '184' },
-          { label: 'M4', height: 94, val: '198' },
-        ],
-      },
-      '12m': {
-        traffic: '614,800',
-        trafficDelta: '+142.5% tahunan',
-        leads: '8,940',
-        leadsDelta: '+189.4% prospek B2B',
-        conversion: '6.12%',
-        conversionDelta: '3.4x ROI Tahunan',
-        caption: 'Julat Data: 12 Bulan Terakhir (Suku 1 – Suku 4)',
-        bars: [
-          { label: 'S1', height: 38, val: '1,420' },
-          { label: 'S2', height: 56, val: '2,010' },
-          { label: 'S3', height: 78, val: '2,580' },
-          { label: 'S4', height: 98, val: '2,930' },
-        ],
-      },
-    },
-  },
-  creative: {
-    id: 'creative',
-    label: 'Studio Digital & Kreatif',
-    badgeDesc: 'Tema Gelap · Ungu Neon · Glassmorphism',
-    kicker: 'Studio Digital & Kreatif · Web Interaktif & Animasi AI',
-    heroTitle:
-      'Pengalaman Web Glassmorphism & Katalog Produksi Digital yang Memukau Audiens',
-    heroSub:
-      'mentransformasi identiti jenama melalui reka bentuk mod gelap moden, produksi video/animasi AI kreatif, serta pameran katalog interaktif.',
-    primaryCtaText: 'Lihat Katalog Kreatif',
-    defaultPackageLabel: 'Website Perniagaan / Syarikat (3–10 Halaman) (RM1,500 – RM5,000)',
-    stats: [
-      { value: '4K 60fps', label: 'Kualiti Visual & Animasi AI' },
-      { value: '3.2x', label: 'Peningkatan Masa Interaksi Pelawat' },
-      { value: '+210%', label: 'Pertumbuhan Tempahan Pakej Kreatif' },
-      { value: '100%', label: 'Hak Milik Komersial Eksklusif' },
-    ],
-    dashboard: {
-      '30d': {
-        traffic: '84,600',
-        trafficDelta: '+62.4% tontonan katalog',
-        leads: '915',
-        leadsDelta: '+74.1% pertanyaan klien',
-        conversion: '5.60%',
-        conversionDelta: '+2.8x ROI',
-        caption: 'Julat Data: 30 Hari Kempen Pelancaran Visual',
-        bars: [
-          { label: 'M1', height: 48, val: '180' },
-          { label: 'M2', height: 66, val: '220' },
-          { label: 'M3', height: 82, val: '245' },
-          { label: 'M4', height: 96, val: '270' },
-        ],
-      },
-      '12m': {
-        traffic: '1,120,400',
-        trafficDelta: '+215.0% trafik organik',
-        leads: '12,480',
-        leadsDelta: '+240.8% permintaan projek',
-        conversion: '7.45%',
-        conversionDelta: '4.8x ROI Kempen',
-        caption: 'Julat Data: 12 Bulan Prestasi Ekosistem Kreatif',
-        bars: [
-          { label: 'S1', height: 42, val: '2,100' },
-          { label: 'S2', height: 64, val: '2,890' },
-          { label: 'S3', height: 84, val: '3,490' },
-          { label: 'S4', height: 100, val: '4,000' },
-        ],
-      },
-    },
-  },
-  ecommerce: {
-    id: 'ecommerce',
-    label: 'Katalog E-Dagang & Retail',
-    badgeDesc: 'Kontras Tinggi · Jingga/Merah · Store',
-    kicker: 'Katalog E-Dagang & Retail · Kedai Online & Checkout Pantas',
-    heroTitle:
-      'Katalog E-Dagang Moden & Sistem Checkout Pantas untuk Gandakan Jualan Online',
-    heroSub:
-      'memudahkan pelanggan menapis produk mengikut kategori, menyemak harga secara telus, dan membuat bayaran FPX atau tempahan WhatsApp dengan satu klik.',
-    primaryCtaText: 'Buka Katalog E-Dagang',
-    defaultPackageLabel: 'Website E-Dagang (Online Store) (RM3,500 – RM10,000+)',
-    stats: [
-      { value: '+88%', label: 'Lonjakan Konversi Checkout Mudah Alih' },
-      { value: '4.2x', label: 'Purata Pulangan Kos Iklan (ROAS)' },
-      { value: '-46%', label: 'Pengurangan Kadar Troli Diabaikan' },
-      { value: '24/7', label: 'Automasi Troli & Payment Gateway FPX' },
-    ],
-    dashboard: {
-      '30d': {
-        traffic: '92,450',
-        trafficDelta: '+78.5% pelawat kedai',
-        leads: '3,840',
-        leadsDelta: '+94.2% pesanan selesai',
-        conversion: '6.80%',
-        conversionDelta: '4.2x ROAS',
-        caption: 'Julat Data: 30 Hari Transaksi Katalog E-Dagang',
-        bars: [
-          { label: 'M1', height: 52, val: '740' },
-          { label: 'M2', height: 68, val: '890' },
-          { label: 'M3', height: 85, val: '1,050' },
-          { label: 'M4', height: 98, val: '1,160' },
-        ],
-      },
-      '12m': {
-        traffic: '1,340,000',
-        trafficDelta: '+260.4% trafik kedai',
-        leads: '54,200',
-        leadsDelta: '+310.0% transaksi berjaya',
-        conversion: '8.15%',
-        conversionDelta: '5.6x ROAS Tahunan',
-        caption: 'Julat Data: 12 Bulan Prestasi Jualan Online Store',
-        bars: [
-          { label: 'S1', height: 45, val: '9,800' },
-          { label: 'S2', height: 65, val: '12,400' },
-          { label: 'S3', height: 82, val: '14,900' },
-          { label: 'S4', height: 100, val: '17,100' },
-        ],
-      },
-    },
-  },
-};
-
-const CASE_STUDIES: CaseStudy[] = [
+const CASE_STUDIES: CaseStudyItem[] = [
   {
     id: 1,
     category: 'Korporat',
-    year: '2026',
-    clientSector: 'Kejuruteraan & Perkhidmatan B2B',
-    title: 'Transformasi Portal Syarikat & Katalog Servis B2B',
-    headlineMetric: '+165% Pertanyaan Sebut Harga Layak',
-    secondaryMetric: 'Masa muat halaman daripada 4.2s ke 0.65s',
+    client: 'Teguh Bina Engineering Sdn Bhd',
+    title: 'Portal Korporat & Sistem Sebut Harga B2B',
+    metric: '+165% Pertanyaan Sebut Harga',
     challenge:
-      'Prospek korporat sukar menyemak senarai perkhidmatan dan spesifikasi teknikal kerana laman web lama tidak mempunyai struktur katalog servis yang jelas.',
+      'Laman web lama sukar diakses melalui telefon pintar dan tidak mempunyai struktur katalog servis yang meyakinkan prospek korporat.',
     solution:
-      'ARASTECH / ARASSTUDIO membina Website Perniagaan / Syarikat (3–10 halaman) lengkap dengan CMS, katalog servis mengikut kategori, dan integrasi sebut harga terus ke WhatsApp.',
+      'ARASTECH / ARASSTUDIO membangunkan Website Perniagaan / Syarikat (RM1,500 – RM5,000) lengkap dengan CMS dan borang sebut harga terus ke WhatsApp.',
     result:
-      'Dalam tempoh 90 hari selepas pelancaran, jumlah pertanyaan sebut harga B2B meningkat sebanyak 165% dan kadar lantunan menurun kepada 24%.',
+      'Peningkatan 165% dalam jumlah pertanyaan tender dan sebut harga layak dalam tempoh 90 hari pertama selepas pelancaran.',
   },
   {
     id: 2,
     category: 'Kreatif',
-    year: '2026',
-    clientSector: 'Studio Senibina & Produksi Visual',
-    title: 'Platform Katalog Kreatif Glassmorphism & Kempen Video AI',
-    headlineMetric: '3.2x Masa Interaksi & +210% Tempahan Pakej',
-    secondaryMetric: 'Skor Prestasi 99/100 pada Mudah Alih & Desktop',
+    client: 'Lumina Digital Studio',
+    title: 'Landing Page Kempen Kreatif & Produksi Visual AI',
+    metric: '3.2x Masa Interaksi Pelawat',
     challenge:
-      'Klien memerlukan laman web bertema gelap yang moden untuk mempamerkan pakej produksi digital dan video komersial AI tanpa menjejaskan kelajuan muat.',
+      'Agensi memerlukan halaman kempen bertema gelap yang moden untuk mempamerkan pakej produksi video AI dan menarik prospek baharu.',
     solution:
-      'Kami menggabungkan reka bentuk glassmorphism gelap dengan katalog pakej interaktif serta menghasilkan aset visual/video AI sinematik pada bahagian Hero.',
+      'Kami membina Landing Page interaktif dengan galeri showreel pantas serta simulator pemilihan pakej terus ke WhatsApp.',
     result:
-      'Purata masa pelawat meneliti katalog servis meningkat 3.2 kali ganda dan menghasilkan peningkatan 210% dalam tempahan pakej kreatif.',
+      'Purata masa interaksi meningkat 3.2 kali ganda dan menghasilkan lonjakan +210% dalam tempahan pakej produksi.',
   },
   {
     id: 3,
     category: 'E-Dagang',
-    year: '2026',
-    clientSector: 'Jenama Penjagaan Diri & Retail',
-    title: 'Katalog E-Dagang (Online Store) & Checkout FPX Pantas',
-    headlineMetric: '+88% Kadar Konversi Checkout & 4.2x ROAS',
-    secondaryMetric: 'Nilai pesanan purata (AOV) meningkat +34%',
+    client: 'Aura Botanica Malaysia',
+    title: 'Website E-Dagang & Checkout FPX Pantas',
+    metric: '+88% Kadar Konversi Checkout',
     challenge:
-      'Trafik iklan yang tinggi gagal bertukar menjadi pembelian kerana pelanggan sukar menapis produk mengikut kategori dan proses checkout terlalu panjang.',
+      'Kadar pengabaian troli tinggi kerana pelanggan sukar menapis produk dan tiada integrasi pembayaran FPX automatik.',
     solution:
-      'ARASTECH / ARASSTUDIO membangunkan Website E-Dagang lengkap dengan bar tab kategori interaktif, integrasi Payment Gateway (Billplz / ToyyibPay / iPay88), dan simulator pesanan WhatsApp.',
+      'Kami membangunkan Website E-Dagang lengkap dengan katalog kategori, sistem troli belanja, dan integrasi Billplz / ToyyibPay.',
     result:
-      'Kadar konversi pengguna telefon pintar melonjak 88% pada minggu pertama kempen, manakala nilai pesanan purata meningkat 34%.',
+      'Kadar konversi pembelian melalui telefon pintar meningkat 88% pada bulan pertama pelancaran.',
   },
 ];
 
+const PRESET_CONFIG: Record<
+  PresetType,
+  {
+    label: string;
+    badgeText: string;
+    heroTitlePrefix: string;
+    heroTitleHighlight: string;
+    heroSubtitle: string;
+  }
+> = {
+  corporate: {
+    label: 'Korporat',
+    badgeText: 'Solusi Web & Produksi Digital Moden',
+    heroTitlePrefix: 'Transformasi Bisnes Anda ke Peringkat',
+    heroTitleHighlight: 'Seterusnya',
+    heroSubtitle:
+      'Papar katalog servis profesional kami khusus untuk membantu lonjakan jualan dan penjenamaan bisnes anda secara efektif.',
+  },
+  creative: {
+    label: 'Kreatif',
+    badgeText: 'Studio Digital, Animasi AI & Web Interaktif',
+    heroTitlePrefix: 'Pengalaman Visual & Web Kreatif Tanpa',
+    heroTitleHighlight: 'Batasan',
+    heroSubtitle:
+      'Gabungan reka bentuk laman web moden, animasi AI memukau, dan sistem katalog digital untuk menonjolkan identiti jenama anda.',
+  },
+  ecommerce: {
+    label: 'E-Dagang',
+    badgeText: 'Katalog E-Dagang & Sistem Jualan Pantas',
+    heroTitlePrefix: 'Gandakan Jualan Online Anda Secara',
+    heroTitleHighlight: 'Automatik',
+    heroSubtitle:
+      'Miliki kedai online lengkap dengan katalog produk, troli beli-belah, payment gateway FPX, dan simulator tempahan WhatsApp.',
+  },
+};
+
 export default function App() {
   const [brandName, setBrandName] = useState<string>('ARASSTUDIO');
-  const [brandInput, setBrandInput] = useState<string>('ARASSTUDIO');
-  const [preset, setPreset] = useState<PresetKey>('corporate');
-  const [catalogTab, setCatalogTab] = useState<CatalogTabKey>('all');
-  const [period, setPeriod] = useState<DashboardPeriod>('30d');
-  const [portfolioFilter, setPortfolioFilter] = useState<PortfolioCategory>('Semua');
+  const [clientInput, setClientInput] = useState<string>('');
+  const [preset, setPreset] = useState<PresetType>('corporate');
+  const [catalogFilter, setCatalogFilter] = useState<CatalogCategory>('all');
+  const [portfolioFilter, setPortfolioFilter] = useState<PortfolioCategory>('all');
 
-  // Modals & Floating Control Panel state
-  const [activeCaseStudy, setActiveCaseStudy] = useState<CaseStudy | null>(null);
-  const [isBookingOpen, setIsBookingOpen] = useState<boolean>(false);
-  const [isDemoPanelMinimized, setIsDemoPanelMinimized] = useState<boolean>(false);
-
-  // WhatsApp Booking Simulator Form State
-  const [waClientName, setWaClientName] = useState<string>('');
-  const [waSelectedPackage, setWaSelectedPackage] = useState<string>(
-    'Website Perniagaan / Syarikat (3–10 Halaman) (RM1,500 – RM5,000)'
+  // Floating Panel & Modals
+  const [isPanelOpen, setIsPanelOpen] = useState<boolean>(true);
+  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
+  const [modalUserName, setModalUserName] = useState<string>('');
+  const [modalPackageName, setModalPackageName] = useState<string>(
+    'Website Perniagaan / Syarikat (RM1,500 – RM5,000)'
   );
-  const [waNotes, setWaNotes] = useState<string>(
-    'Berminat dengan Terma Bayaran Penuh (100% Upfront) untuk nikmati Percuma Setup Domain/Hosting + Keutamaan Fast-Track.'
+  const [modalNotes, setModalNotes] = useState<string>(
+    'Berminat dengan Terma Bayaran Penuh (100% Upfront) untuk Percuma Domain/Hosting & Fast-Track.'
   );
+  const [activeCaseStudy, setActiveCaseStudy] = useState<CaseStudyItem | null>(null);
 
-  const activePreset = PRESETS[preset];
-  const activeDash = activePreset.dashboard[period];
   const isDark = preset === 'creative';
+  const currentPresetConfig = PRESET_CONFIG[preset];
 
-  const handleBrandChange = (value: string) => {
-    setBrandInput(value);
-    const trimmed = value.trim();
-    setBrandName(trimmed.length > 0 ? trimmed : 'ARASSTUDIO');
-  };
-
-  const handleResetBrand = () => {
-    setBrandInput('ARASSTUDIO');
-    setBrandName('ARASSTUDIO');
-  };
-
-  const handlePresetSwitch = (newPreset: PresetKey) => {
-    setPreset(newPreset);
-    setWaSelectedPackage(PRESETS[newPreset].defaultPackageLabel);
-  };
-
-  const openBookingWithPackage = (packageLabel?: string) => {
-    if (packageLabel) {
-      setWaSelectedPackage(packageLabel);
-    }
-    setIsBookingOpen(true);
-  };
-
-  const filteredCatalogItems = useMemo(() => {
-    if (catalogTab === 'all') return CATALOG_PRODUCTS;
-    return CATALOG_PRODUCTS.filter((item) => item.categoryKey === catalogTab);
-  }, [catalogTab]);
-
-  const filteredCaseStudies = useMemo(() => {
-    if (portfolioFilter === 'Semua') return CASE_STUDIES;
-    return CASE_STUDIES.filter((item) => item.category === portfolioFilter);
-  }, [portfolioFilter]);
-
-  const whatsappMessage = useMemo(() => {
-    const sender = waClientName.trim() || 'Wakil Pengurusan';
-    const noteText =
-      waNotes.trim() ||
-      'Ingin mendapatkan tarikh mula projek terawal (Fast-Track).';
-
-    return `Salam Tim ARASTECH / ARASSTUDIO,
-
-Saya ${sender} daripada *${brandName}*.
-Kami telah memilih pakej daripada Katalog Digital (${activePreset.label}) dan ingin menempah:
-
-• Nama Bisnes: ${brandName}
-• Pakej / Produk Pilihan: ${waSelectedPackage}
-• Nota Projek: ${noteText}
-
-Mohon kongsikan jadual pelaksanaan & langkah seterusnya. Terima kasih!`;
-  }, [waClientName, brandName, activePreset.label, waSelectedPackage, waNotes]);
-
-  const whatsappUrl = useMemo(() => {
-    return `https://wa.me/+601131738516?text=${encodeURIComponent(whatsappMessage)}`;
-  }, [whatsappMessage]);
-
-  // Theme tokens per preset (60-30-10 discipline)
-  const theme = useMemo(() => {
+  // Dynamic color classes based on preset (Corporate = Blue, Creative = Dark + Purple, E-Commerce = Orange)
+  const accent = useMemo(() => {
     if (preset === 'creative') {
       return {
-        canvas: 'bg-[#090A0F] text-slate-100',
-        nav: 'bg-[#090A0F]/90 border-slate-800/80 text-slate-100',
-        navLink: 'text-slate-300 hover:text-white',
-        surface: 'bg-slate-900/80 border-slate-800 backdrop-blur-md',
-        surfaceSubtle: 'bg-slate-950/90 border-slate-800',
-        mutedText: 'text-slate-400',
-        border: 'border-slate-800',
-        accentBtn: 'bg-indigo-600 hover:bg-indigo-500 text-white',
-        secondaryBtn: 'border-slate-700 text-slate-200 hover:bg-slate-800/80',
-        accentText: 'text-indigo-400',
-        barFill: 'bg-indigo-500',
-        featuredRing: 'border-indigo-500 ring-1 ring-indigo-500 bg-slate-900/95',
-        upfrontBanner: 'bg-indigo-950/40 border-indigo-500/40 text-indigo-200',
+        bg: 'bg-purple-600 hover:bg-purple-500',
+        text: 'text-purple-400',
+        badge:
+          'bg-purple-900/30 text-purple-300 border-purple-800',
+        tabActive: 'bg-purple-600 text-white shadow-sm',
+        cardBadge: 'bg-purple-600 text-white',
+        priceText: 'text-purple-400',
+        btnDark: 'bg-purple-600 hover:bg-purple-500 text-white',
+        logoBox: 'bg-purple-600 shadow-purple-500/20',
       };
     }
     if (preset === 'ecommerce') {
       return {
-        canvas: 'bg-[#FAF9F6] text-stone-950',
-        nav: 'bg-white/95 border-stone-200 text-stone-950',
-        navLink: 'text-stone-600 hover:text-stone-950',
-        surface: 'bg-white border-stone-200',
-        surfaceSubtle: 'bg-orange-50/50 border-stone-200',
-        mutedText: 'text-stone-600',
-        border: 'border-stone-200',
-        accentBtn: 'bg-orange-600 hover:bg-orange-700 text-white',
-        secondaryBtn: 'border-stone-300 text-stone-900 hover:bg-stone-100',
-        accentText: 'text-orange-600',
-        barFill: 'bg-orange-600',
-        featuredRing: 'border-orange-600 ring-1 ring-orange-600 bg-white',
-        upfrontBanner: 'bg-orange-50/80 border-orange-200 text-orange-950',
+        bg: 'bg-orange-600 hover:bg-orange-700',
+        text: 'text-orange-600',
+        badge:
+          'bg-orange-50 text-orange-600 border-orange-200',
+        tabActive: 'bg-orange-600 text-white shadow-sm',
+        cardBadge: 'bg-orange-600 text-white',
+        priceText: 'text-orange-600',
+        btnDark: 'bg-gray-900 hover:bg-orange-600 text-white',
+        logoBox: 'bg-orange-600 shadow-orange-500/20',
       };
     }
-    // Default: corporate (Light / White, Navy Blue primary)
     return {
-      canvas: 'bg-[#F8FAFC] text-slate-900',
-      nav: 'bg-white/95 border-slate-200 text-slate-900',
-      navLink: 'text-slate-600 hover:text-slate-950',
-      surface: 'bg-white border-slate-200',
-      surfaceSubtle: 'bg-slate-100/75 border-slate-200',
-      mutedText: 'text-slate-600',
-      border: 'border-slate-200',
-      accentBtn: 'bg-[#1E3A8A] hover:bg-blue-900 text-white',
-      secondaryBtn: 'border-slate-300 text-slate-800 hover:bg-slate-100',
-      accentText: 'text-[#1E3A8A]',
-      barFill: 'bg-[#1E3A8A]',
-      featuredRing: 'border-[#1E3A8A] ring-1 ring-[#1E3A8A] bg-white',
-      upfrontBanner: 'bg-blue-50/70 border-blue-200 text-slate-900',
+      bg: 'bg-blue-600 hover:bg-blue-700',
+      text: 'text-blue-600',
+      badge:
+        'bg-blue-50 text-blue-600 border-blue-100',
+      tabActive: 'bg-blue-600 text-white shadow-sm',
+      cardBadge: 'bg-blue-600 text-white',
+      priceText: 'text-blue-600',
+      btnDark: 'bg-gray-900 hover:bg-blue-600 text-white',
+      logoBox: 'bg-blue-600 shadow-blue-500/20',
     };
   }, [preset]);
 
-  const renderProductIcon = (iconName: CatalogProductItem['iconName']) => {
-    const props = { className: `w-6 h-6 ${theme.accentText}` };
-    switch (iconName) {
-      case 'Layout':
-        return <Layout {...props} />;
-      case 'Building2':
-        return <Building2 {...props} />;
-      case 'ShoppingBag':
-        return <ShoppingBag {...props} />;
-      case 'Cpu':
-        return <Cpu {...props} />;
-      case 'Zap':
-        return <Zap {...props} />;
-      case 'Store':
-        return <Store {...props} />;
-      default:
-        return <ShoppingBag {...props} />;
+  const handleClientInputChange = (val: string) => {
+    setClientInput(val);
+    setBrandName(val.trim() || 'ARASSTUDIO');
+  };
+
+  const resetClientName = () => {
+    setClientInput('');
+    setBrandName('ARASSTUDIO');
+  };
+
+  const openWhatsAppModal = (pkgLabel: string) => {
+    setModalPackageName(pkgLabel);
+    setIsWhatsAppModalOpen(true);
+  };
+
+  const closeWhatsAppModal = () => {
+    setIsWhatsAppModalOpen(false);
+  };
+
+  const filteredCatalog = useMemo(() => {
+    if (catalogFilter === 'all') return CATALOG_PRODUCTS;
+    return CATALOG_PRODUCTS.filter((p) => p.category === catalogFilter);
+  }, [catalogFilter]);
+
+  const filteredPortfolio = useMemo(() => {
+    if (portfolioFilter === 'all') return CASE_STUDIES;
+    return CASE_STUDIES.filter((c) => c.category === portfolioFilter);
+  }, [portfolioFilter]);
+
+  const whatsappPreviewText = useMemo(() => {
+    const sender = modalUserName.trim() || 'Pelanggan';
+    return `Salam Tim ARASTECH / ARASSTUDIO,\n\nSaya *${sender}* daripada *${brandName}*.\nSaya berminat dengan pakej:\n• *${modalPackageName}*\n• Pratetap: ${currentPresetConfig.label}\n• Nota: ${modalNotes.trim() || 'Mohon maklumat lanjut.'}\n\nTerima kasih!`;
+  }, [modalUserName, brandName, modalPackageName, currentPresetConfig.label, modalNotes]);
+
+  const whatsappHref = useMemo(() => {
+    return `https://wa.me/+601131738516?text=${encodeURIComponent(whatsappPreviewText)}`;
+  }, [whatsappPreviewText]);
+
+  const renderThumbnailIllustration = (category: CatalogProduct['category']) => {
+    if (category === 'landing') {
+      return (
+        <div className="w-full h-full bg-gradient-to-br from-slate-800 via-slate-900 to-blue-950 p-5 flex flex-col justify-between text-white">
+          <div className="flex items-center justify-between opacity-60 text-[10px] font-mono">
+            <span>single-page.app</span>
+            <span>3–5 Hari</span>
+          </div>
+          <div className="my-auto space-y-2">
+            <div className="h-2 w-16 rounded bg-blue-400/50" />
+            <div className="h-3.5 w-4/5 rounded bg-white/80" />
+            <div className="h-2.5 w-3/5 rounded bg-white/40" />
+            <div className="pt-1 flex gap-2">
+              <div className="h-5 w-20 rounded bg-blue-500" />
+              <div className="h-5 w-14 rounded bg-white/15" />
+            </div>
+          </div>
+          <div className="flex items-center justify-end">
+            <Layout className="w-5 h-5 text-blue-400 opacity-80" />
+          </div>
+        </div>
+      );
     }
+    if (category === 'corporate') {
+      return (
+        <div className="w-full h-full bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 p-5 flex flex-col justify-between text-white">
+          <div className="flex items-center justify-between opacity-60 text-[10px] font-mono">
+            <span>corporate-cms.my</span>
+            <span>3–10 Halaman</span>
+          </div>
+          <div className="my-auto grid grid-cols-3 gap-2 pt-2">
+            <div className="col-span-2 space-y-1.5">
+              <div className="h-3 w-full rounded bg-white/80" />
+              <div className="h-2 w-4/5 rounded bg-white/40" />
+              <div className="grid grid-cols-2 gap-1.5 pt-1">
+                <div className="h-8 rounded bg-white/10 border border-white/15" />
+                <div className="h-8 rounded bg-white/10 border border-white/15" />
+              </div>
+            </div>
+            <div className="h-full rounded bg-blue-500/20 border border-blue-400/30 flex items-center justify-center">
+              <Building2 className="w-6 h-6 text-blue-300" />
+            </div>
+          </div>
+          <div className="text-[10px] font-mono text-blue-300">CMS + Google Maps</div>
+        </div>
+      );
+    }
+    if (category === 'ecommerce') {
+      return (
+        <div className="w-full h-full bg-gradient-to-br from-stone-900 via-orange-950 to-amber-950 p-5 flex flex-col justify-between text-white">
+          <div className="flex items-center justify-between opacity-60 text-[10px] font-mono">
+            <span>online-store.my</span>
+            <span>FPX Checkout</span>
+          </div>
+          <div className="my-auto grid grid-cols-3 gap-2">
+            <div className="p-2 rounded bg-white/10 border border-white/15 space-y-1">
+              <div className="h-6 rounded bg-orange-400/30" />
+              <div className="h-1.5 w-full rounded bg-white/60" />
+            </div>
+            <div className="p-2 rounded bg-white/10 border border-white/15 space-y-1">
+              <div className="h-6 rounded bg-amber-400/30" />
+              <div className="h-1.5 w-full rounded bg-white/60" />
+            </div>
+            <div className="p-2 rounded bg-orange-500/30 border border-orange-400/40 flex items-center justify-center">
+              <ShoppingBag className="w-5 h-5 text-orange-300" />
+            </div>
+          </div>
+          <div className="text-[10px] font-mono text-orange-300">
+            Billplz · ToyyibPay · iPay88
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="w-full h-full bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 p-5 flex flex-col justify-between text-white">
+        <div className="flex items-center justify-between opacity-60 text-[10px] font-mono">
+          <span>custom-system.io</span>
+          <span>API &amp; Portal</span>
+        </div>
+        <div className="my-auto flex items-end gap-2 h-14 pt-2">
+          <div className="flex-1 bg-indigo-500/40 rounded-t h-6" />
+          <div className="flex-1 bg-indigo-500/60 rounded-t h-9" />
+          <div className="flex-1 bg-purple-500/80 rounded-t h-12" />
+          <div className="flex-1 bg-emerald-400 rounded-t h-14" />
+          <div className="p-2.5 rounded-lg bg-white/10 border border-white/15">
+            <Cpu className="w-5 h-5 text-purple-300" />
+          </div>
+        </div>
+        <div className="text-[10px] font-mono text-purple-300">
+          Booking System &amp; Membership Portal
+        </div>
+      </div>
+    );
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-200 ${theme.canvas}`}>
-      {/* B.1 STICKY NAVBAR — Strict 3-Zone Top Bar Contract */}
-      <header
-        className={`sticky top-0 z-40 border-b backdrop-blur-md transition-colors duration-200 ${theme.nav}`}
+    <div
+      className={`min-h-screen transition-colors duration-300 ${
+        isDark ? 'bg-gray-950 text-white' : 'bg-gray-50 text-gray-900'
+      }`}
+    >
+      {/* Sticky Navbar (Strict 3-Zone Top Bar Contract) */}
+      <nav
+        className={`sticky top-0 z-40 backdrop-blur-md border-b transition-colors ${
+          isDark
+            ? 'bg-gray-900/85 border-gray-800'
+            : 'bg-white/85 border-gray-100'
+        }`}
       >
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between gap-8">
-          {/* Zone 1: Single text element wordmark */}
-          <a
-            href="#"
-            className="text-lg font-bold tracking-tight whitespace-nowrap shrink-0 truncate max-w-[220px]"
-          >
-            {brandName}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-8">
+          {/* Zone 1: Brand Wordmark */}
+          <a href="#" className="flex items-center space-x-3 shrink-0">
+            <div
+              className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-md ${accent.logoBox}`}
+            >
+              {brandName.charAt(0).toUpperCase()}
+            </div>
+            <span className="font-extrabold text-lg tracking-tight whitespace-nowrap">
+              {brandName}
+            </span>
           </a>
 
-          {/* Zone 2: 4 clean single-line navigation links */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
+          {/* Zone 2: Nav Links */}
+          <div
+            className={`hidden md:flex items-center space-x-8 text-sm font-medium ${
+              isDark ? 'text-gray-300' : 'text-gray-600'
+            }`}
+          >
             <a
               href="#katalog"
-              className={`${theme.navLink} hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0`}
+              className="hover:underline underline-offset-4 transition whitespace-nowrap shrink-0"
             >
               Katalog Servis
             </a>
             <a
               href="#portfolio"
-              className={`${theme.navLink} hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0`}
+              className="hover:underline underline-offset-4 transition whitespace-nowrap shrink-0"
             >
               Portfolio
             </a>
             <a
               href="#harga"
-              className={`${theme.navLink} hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0`}
+              className="hover:underline underline-offset-4 transition whitespace-nowrap shrink-0"
             >
-              Harga
+              Pakej Harga
             </a>
             <a
               href="#hubungi"
-              className={`${theme.navLink} hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0`}
+              className="hover:underline underline-offset-4 transition whitespace-nowrap shrink-0"
             >
               Hubungi
             </a>
-          </nav>
+          </div>
 
-          {/* Zone 3: 1 primary WhatsApp CTA button */}
-          <div className="flex items-center shrink-0">
+          {/* Zone 3: Primary CTA */}
+          <div className="shrink-0">
             <button
               type="button"
-              onClick={() => openBookingWithPackage(activePreset.defaultPackageLabel)}
-              className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer ${theme.accentBtn}`}
+              onClick={() => openWhatsAppModal('Pertanyaan Am Pelanggan')}
+              className={`${accent.bg} text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-lg transition transform active:scale-95 whitespace-nowrap cursor-pointer`}
             >
-              Tempah via WhatsApp
+              Hubungi Kami
             </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <header className="relative pt-14 pb-20 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center max-w-3xl mx-auto">
+            <div
+              className={`inline-flex items-center space-x-2 text-xs font-bold px-3.5 py-1.5 rounded-lg mb-6 border ${accent.badge}`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>{currentPresetConfig.badgeText}</span>
+            </div>
+
+            <h1
+              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight"
+              style={{ textWrap: 'balance' }}
+            >
+              {currentPresetConfig.heroTitlePrefix}{' '}
+              <span className={accent.text}>
+                {currentPresetConfig.heroTitleHighlight}
+              </span>
+            </h1>
+
+            <p
+              className={`mt-6 text-lg leading-relaxed ${
+                isDark ? 'text-gray-300' : 'text-gray-600'
+              }`}
+            >
+              Selamat datang ke portal rasmi{' '}
+              <span className="font-bold">{brandName}</span>.{' '}
+              {currentPresetConfig.heroSubtitle}
+            </p>
+
+            <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+              <a
+                href="#katalog"
+                className={`${accent.bg} text-white font-semibold px-8 py-3.5 rounded-xl shadow-lg transition whitespace-nowrap`}
+              >
+                Teroka Katalog Servis
+              </a>
+              <a
+                href="#portfolio"
+                className={`font-semibold px-8 py-3.5 rounded-xl border transition whitespace-nowrap ${
+                  isDark
+                    ? 'bg-gray-900 text-gray-200 border-gray-800 hover:bg-gray-800'
+                    : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                }`}
+              >
+                Lihat Contoh Projek
+              </a>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* B.2 HERO SECTION */}
-      <section className={`py-16 lg:py-24 px-6 border-b ${theme.border}`}>
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch">
-            {/* Left Column: Proposition & Quick Action to Catalog */}
-            <div className="lg:col-span-7 flex flex-col justify-between space-y-8">
-              <div className="space-y-6">
-                <div className={`text-xs font-medium tracking-wide ${theme.mutedText}`}>
-                  {activePreset.kicker}
-                </div>
-
-                <h1
-                  className="text-3xl sm:text-5xl lg:text-[50px] font-bold tracking-tight leading-[1.12]"
-                  style={{ textWrap: 'balance' }}
-                >
-                  {activePreset.heroTitle}
-                </h1>
-
-                <p className={`text-base sm:text-lg leading-relaxed max-w-2xl ${theme.mutedText}`}>
-                  Kami membantu{' '}
-                  <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-950'}`}>
-                    {brandName}
-                  </span>{' '}
-                  {activePreset.heroSub}
-                </p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-4 pt-2">
-                <a
-                  href="#katalog"
-                  className={`px-6 py-3.5 text-sm font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 inline-flex items-center gap-2 ${theme.accentBtn}`}
-                >
-                  <span>{activePreset.primaryCtaText}</span>
-                  <ArrowDownRight className="w-4 h-4" />
-                </a>
-                <button
-                  type="button"
-                  onClick={() => openBookingWithPackage(activePreset.defaultPackageLabel)}
-                  className={`px-6 py-3.5 text-sm font-semibold rounded-lg border transition-colors whitespace-nowrap shrink-0 cursor-pointer ${theme.secondaryBtn}`}
-                >
-                  Simulator Tempahan WhatsApp
-                </button>
-              </div>
-            </div>
-
-            {/* Right Column: Interactive Storefront & Conversion Dashboard */}
-            <div className="lg:col-span-5">
-              <div
-                className={`h-full rounded-xl border p-6 flex flex-col justify-between transition-colors duration-200 ${theme.surface}`}
-              >
-                <div
-                  className={`flex flex-wrap items-center justify-between gap-4 pb-5 border-b ${theme.border}`}
-                >
-                  <div>
-                    <div className={`text-xs font-medium ${theme.mutedText}`}>
-                      Analitik Katalog · <span className="font-semibold">{brandName}</span>
-                    </div>
-                    <div className="text-sm font-bold mt-0.5 flex items-center gap-1.5">
-                      <BarChart3 className={`w-4 h-4 ${theme.accentText}`} />
-                      <span>Prestasi Trafik &amp; Konversi Katalog</span>
-                    </div>
-                  </div>
-
-                  <div
-                    className={`flex items-center gap-1 p-1 rounded-lg ${
-                      isDark ? 'bg-slate-800' : 'bg-slate-100'
-                    }`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setPeriod('30d')}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                        period === '30d'
-                          ? isDark
-                            ? 'bg-indigo-600 text-white'
-                            : 'bg-white text-slate-900 shadow-sm'
-                          : isDark
-                          ? 'text-slate-400 hover:text-white'
-                          : 'text-slate-600 hover:text-slate-900'
-                      }`}
-                    >
-                      30 Hari
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setPeriod('12m')}
-                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                        period === '12m'
-                          ? isDark
-                            ? 'bg-indigo-600 text-white'
-                            : 'bg-white text-slate-900 shadow-sm'
-                          : isDark
-                          ? 'text-slate-400 hover:text-white'
-                          : 'text-slate-600 hover:text-slate-900'
-                      }`}
-                    >
-                      12 Bulan
-                    </button>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 py-6">
-                  <div>
-                    <div className={`text-xs ${theme.mutedText}`}>Pelawat Katalog</div>
-                    <div className="text-xl sm:text-2xl font-bold tabular-nums mt-1">
-                      {activeDash.traffic}
-                    </div>
-                    <div className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-1 tabular-nums">
-                      {activeDash.trafficDelta}
-                    </div>
-                  </div>
-                  <div>
-                    <div className={`text-xs ${theme.mutedText}`}>Tempahan / Leads</div>
-                    <div className="text-xl sm:text-2xl font-bold tabular-nums mt-1">
-                      {activeDash.leads}
-                    </div>
-                    <div className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-1 tabular-nums">
-                      {activeDash.leadsDelta}
-                    </div>
-                  </div>
-                  <div>
-                    <div className={`text-xs ${theme.mutedText}`}>Kadar Konversi</div>
-                    <div className="text-xl sm:text-2xl font-bold tabular-nums mt-1">
-                      {activeDash.conversion}
-                    </div>
-                    <div className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-1 tabular-nums">
-                      {activeDash.conversionDelta}
-                    </div>
-                  </div>
-                </div>
-
-                <div className={`pt-5 border-t ${theme.border}`}>
-                  <div className="flex items-center justify-between text-xs mb-4">
-                    <span className={`font-medium ${theme.mutedText}`}>
-                      Trend Pesanan Katalog
-                    </span>
-                    <span className="font-mono text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                      <TrendingUp className="w-3.5 h-3.5" />
-                      <span>Aktif</span>
-                    </span>
-                  </div>
-
-                  <div className="h-28 flex items-end gap-4 pt-2 px-2">
-                    {activeDash.bars.map((bar) => (
-                      <div
-                        key={bar.label}
-                        className="flex-1 flex flex-col items-center justify-end h-full gap-1.5"
-                      >
-                        <span className="text-[11px] font-mono tabular-nums font-semibold">
-                          {bar.val}
-                        </span>
-                        <div className="w-full bg-slate-200/50 dark:bg-slate-800/60 rounded-t-md h-16 flex items-end overflow-hidden">
-                          <div
-                            className={`w-full rounded-t-md transition-all duration-300 ${theme.barFill}`}
-                            style={{ height: `${bar.height}%` }}
-                          />
-                        </div>
-                        <span className={`text-[11px] font-mono tabular-nums ${theme.mutedText}`}>
-                          {bar.label}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className={`text-[11px] mt-3 text-right ${theme.mutedText}`}>
-                    {activeDash.caption}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 4-Column Full-Width KPI Strip */}
-          <div
-            className={`mt-14 pt-8 border-t ${theme.border} grid grid-cols-2 md:grid-cols-4 gap-8`}
-          >
-            {activePreset.stats.map((st, idx) => (
-              <div key={idx}>
-                <div className="text-2xl sm:text-3xl font-bold tabular-nums tracking-tight">
-                  {st.value}
-                </div>
-                <div className={`text-xs mt-1 ${theme.mutedText}`}>{st.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* B.3 SEKSYEN KATALOG SERVIS (E-Commerce Style) */}
-      <section id="katalog" className={`py-20 px-6 border-b ${theme.border}`}>
-        <div id="harga" className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-8">
-            <div className="max-w-2xl">
-              <div className={`text-xs font-medium mb-2 ${theme.mutedText}`}>
-                Katalog Digital E-Dagang · Senarai Pakej &amp; Harga Rasmi ARASTECH / ARASSTUDIO
-              </div>
-              <h2
-                className="text-2xl sm:text-3xl font-bold tracking-tight"
-                style={{ textWrap: 'balance' }}
-              >
-                Katalog Pakej Web &amp; Sistem Digital untuk {brandName}
-              </h2>
-            </div>
-
-            {/* Bar Tab Kategori Interaktif */}
-            <div
-              role="tablist"
-              aria-label="Kategori Katalog Servis"
-              className={`flex flex-wrap items-center gap-1 p-1.5 rounded-xl ${
-                isDark ? 'bg-slate-900 border border-slate-800' : 'bg-slate-200/80'
+      {/* Katalog Servis E-Commerce Style */}
+      <section
+        id="katalog"
+        className={`py-16 border-t transition-colors ${
+          isDark
+            ? 'bg-gray-900 border-gray-800'
+            : 'bg-white border-gray-100'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-extrabold">Katalog Pakej &amp; Servis</h2>
+            <p
+              className={`mt-2 text-sm sm:text-base ${
+                isDark ? 'text-gray-400' : 'text-gray-500'
               }`}
             >
-              {CATALOG_TABS.map((tab) => {
-                const isActive = catalogTab === tab.key;
+              Pilih solusi digital yang tepat dengan keperluan bajet syarikat{' '}
+              <span className="font-semibold">{brandName}</span>.
+            </p>
+
+            {/* Tab Kategori Interaktif */}
+            <div className="flex justify-center gap-2 mt-6 flex-wrap">
+              {(
+                [
+                  { key: 'all', label: 'Semua' },
+                  { key: 'landing', label: 'Landing Page' },
+                  { key: 'corporate', label: 'Website Bisnes' },
+                  { key: 'ecommerce', label: 'E-Dagang' },
+                  { key: 'custom', label: 'Sistem Custom' },
+                ] as { key: CatalogCategory; label: string }[]
+              ).map((tab) => {
+                const active = catalogFilter === tab.key;
                 return (
                   <button
                     key={tab.key}
                     type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    onClick={() => setCatalogTab(tab.key)}
-                    className={`px-3.5 py-2 text-xs font-semibold rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                      isActive
-                        ? isDark
-                          ? 'bg-indigo-600 text-white shadow-sm'
-                          : 'bg-white text-slate-950 shadow-sm'
+                    onClick={() => setCatalogFilter(tab.key)}
+                    className={`px-4 py-2 rounded-xl text-sm transition cursor-pointer whitespace-nowrap shrink-0 ${
+                      active
+                        ? `${accent.tabActive} font-semibold`
                         : isDark
-                        ? 'text-slate-400 hover:text-white'
-                        : 'text-slate-600 hover:text-slate-950'
+                        ? 'bg-gray-800 text-gray-300 hover:bg-gray-700 font-medium'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200 font-medium'
                     }`}
                   >
                     {tab.label}
@@ -864,272 +570,83 @@ Mohon kongsikan jadual pelaksanaan & langkah seterusnya. Terima kasih!`;
             </div>
           </div>
 
-          {/* Exclusive 100% Upfront Payment Terms Banner */}
-          <div
-            className={`mb-10 p-4 sm:p-5 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-4 ${theme.upfrontBanner}`}
-          >
-            <div className="flex items-start md:items-center gap-3.5">
-              <ShieldCheck className="w-5 h-5 shrink-0 mt-0.5 md:mt-0" />
-              <div>
-                <div className="text-xs sm:text-sm font-bold">
-                  Terma Bayaran Penuh (100% Upfront): Percuma Setup Domain/Hosting + Keutamaan
-                  Giliran Projek (Fast-Track)
-                </div>
-                <div className="text-xs opacity-80 mt-0.5">
-                  Pilih mana-mana pakej katalog di bawah untuk menjana sebut harga segera ke
-                  WhatsApp tim ARASTECH / ARASSTUDIO.
-                </div>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                openBookingWithPackage(
-                  `${activePreset.defaultPackageLabel} — Terma 100% Upfront Fast-Track`
-                )
-              }
-              className="text-xs font-semibold underline underline-offset-4 whitespace-nowrap shrink-0 self-start md:self-center cursor-pointer"
-            >
-              Tuntut Fast-Track →
-            </button>
-          </div>
-
-          {/* 3-Column E-Commerce Product/Service Card Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7 items-stretch">
-            {filteredCatalogItems.map((product) => {
-              const isHighlighted = product.featuredForPreset === preset;
-              return (
-                <article
-                  key={product.id}
-                  className={`group rounded-xl border overflow-hidden flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 ${
-                    isHighlighted ? theme.featuredRing : theme.surface
-                  }`}
-                >
-                  <div>
-                    {/* Aesthetic Product Visual Header (Zero-Broken-Image Policy) */}
-                    <div
-                      className={`h-48 border-b p-5 flex flex-col justify-between relative overflow-hidden ${theme.surfaceSubtle}`}
-                    >
-                      <div className="flex items-center justify-between gap-2 text-xs">
-                        <span className="font-mono font-bold text-amber-500">
-                          {product.badge}
-                        </span>
-                        <span className={`font-medium ${theme.mutedText}`}>
-                          {product.categoryLabel}
-                        </span>
-                      </div>
-
-                      {/* Minimalist E-Commerce Product Wireframe Illustration */}
-                      <div className="my-auto flex items-center justify-between gap-4 py-2">
-                        <div className="space-y-2 flex-1">
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-current opacity-25" />
-                            <span className="w-2 h-2 rounded-full bg-current opacity-25" />
-                            <span className="h-2 w-16 rounded bg-current opacity-20" />
-                          </div>
-                          <div className="h-3 w-full rounded bg-current opacity-25" />
-                          <div className="h-3 w-4/5 rounded bg-current opacity-15" />
-                          <div className="pt-1 flex items-center gap-2">
-                            <div className={`h-5 w-20 rounded ${theme.barFill} opacity-80`} />
-                            <div className="h-5 w-12 rounded border border-current opacity-20" />
-                          </div>
-                        </div>
-
-                        <div
-                          className={`p-3.5 rounded-xl border transition-transform duration-200 group-hover:scale-105 ${theme.surface}`}
-                        >
-                          {renderProductIcon(product.iconName)}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between text-[11px] font-mono">
-                        <span className={theme.mutedText}>{product.timeline}</span>
-                        {isHighlighted && (
-                          <span className={`font-bold ${theme.accentText}`}>
-                            ★ Pilihan Utama
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Product Body */}
-                    <div className="p-6 space-y-4">
-                      <div>
-                        <div className={`text-xs ${theme.mutedText}`}>
-                          <span>{product.categoryLabel}</span>
-                          <span aria-hidden="true"> · </span>
-                          <span>Katalog {brandName}</span>
-                        </div>
-                        <h3 className="text-lg font-bold tracking-tight mt-1">
-                          {product.name}
-                        </h3>
-                        <div className="text-2xl sm:text-[26px] font-bold tabular-nums mt-2">
-                          {product.price}
-                        </div>
-                      </div>
-
-                      <p className={`text-xs leading-relaxed ${theme.mutedText}`}>
-                        {product.desc}
-                      </p>
-
-                      <div className={`pt-4 border-t ${theme.border}`}>
-                        <div className="text-xs font-semibold mb-2.5">
-                          Spesifikasi Pakej Termasuk:
-                        </div>
-                        <ul className="space-y-2">
-                          {product.features.map((feat, idx) => (
-                            <li
-                              key={idx}
-                              className="flex items-start gap-2 text-xs leading-relaxed"
-                            >
-                              <Check
-                                className={`w-4 h-4 shrink-0 mt-0.5 ${theme.accentText}`}
-                              />
-                              <span>{feat}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Contiguous Action Button */}
-                  <div className="p-6 pt-0">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openBookingWithPackage(`${product.name} (${product.price})`)
-                      }
-                      className={`w-full py-3.5 px-4 rounded-lg text-xs font-semibold transition-colors inline-flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap ${theme.accentBtn}`}
-                    >
-                      <ShoppingBag className="w-4 h-4" />
-                      <span>Pilih Pakej / Beli Sekarang</span>
-                    </button>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* B.4 PORTFOLIO & KAJIAN KES (Case Studies) */}
-      <section id="portfolio" className={`py-20 px-6 border-b ${theme.border}`}>
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-            <div>
-              <div className={`text-xs font-medium mb-2 ${theme.mutedText}`}>
-                Bukti Keberkesanan &amp; Rekod Projek
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">
-                Portfolio &amp; Kajian Kes Klien
-              </h2>
-            </div>
-
-            <div
-              className={`flex flex-wrap items-center gap-1 p-1 rounded-lg ${
-                isDark ? 'bg-slate-900 border border-slate-800' : 'bg-slate-200/75'
-              }`}
-            >
-              {(['Semua', 'Korporat', 'Kreatif', 'E-Dagang'] as PortfolioCategory[]).map(
-                (cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setPortfolioFilter(cat)}
-                    className={`px-3.5 py-1.5 text-xs font-semibold rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-                      portfolioFilter === cat
-                        ? isDark
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-white text-slate-900 shadow-sm'
-                        : isDark
-                        ? 'text-slate-400 hover:text-white'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                )
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {filteredCaseStudies.map((study) => (
+          {/* Grid Katalog Produk (4 Kolum) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {filteredCatalog.map((product) => (
               <div
-                key={study.id}
-                onClick={() => setActiveCaseStudy(study)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setActiveCaseStudy(study);
-                  }
-                }}
-                className={`group cursor-pointer rounded-xl border overflow-hidden flex flex-col justify-between transition-transform duration-200 hover:-translate-y-1 ${theme.surface}`}
+                key={product.id}
+                className={`rounded-2xl overflow-hidden border shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between ${
+                  isDark
+                    ? 'bg-gray-800/90 border-gray-700'
+                    : 'bg-white border-gray-100'
+                }`}
               >
                 <div>
-                  <div
-                    className={`h-44 border-b ${theme.border} p-5 flex flex-col justify-between relative overflow-hidden ${
-                      study.category === 'Korporat'
-                        ? isDark
-                          ? 'bg-slate-900'
-                          : 'bg-slate-100'
-                        : study.category === 'Kreatif'
-                        ? 'bg-slate-950 text-white'
-                        : isDark
-                        ? 'bg-stone-900'
-                        : 'bg-orange-50/60'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between text-[11px] font-mono opacity-75">
-                      <span>{study.clientSector}</span>
-                      <span>{study.year}</span>
+                  <div className="relative overflow-hidden aspect-[16/10]">
+                    <div className="w-full h-full group-hover:scale-105 transition duration-500">
+                      {renderThumbnailIllustration(product.category)}
                     </div>
-
-                    <div className="my-auto py-2">
-                      <div className="grid grid-cols-12 gap-2 items-end">
-                        <div className="col-span-7 space-y-1.5">
-                          <div className="h-2 w-16 rounded bg-current opacity-20" />
-                          <div className="h-3 w-full rounded bg-current opacity-30" />
-                          <div className="h-3 w-4/5 rounded bg-current opacity-20" />
-                        </div>
-                        <div className="col-span-5 flex items-end gap-1 h-12">
-                          <div className="flex-1 bg-emerald-500/50 rounded-t h-5" />
-                          <div className="flex-1 bg-emerald-500/70 rounded-t h-8" />
-                          <div className="flex-1 bg-emerald-500 rounded-t h-12" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="text-xs font-mono font-semibold text-emerald-600 dark:text-emerald-400">
-                      {study.headlineMetric}
-                    </div>
+                    <span
+                      className={`absolute top-3 left-3 text-[10px] px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wider ${accent.cardBadge}`}
+                    >
+                      {product.badge}
+                    </span>
                   </div>
 
-                  <div className="p-6 space-y-3">
-                    <div className={`text-xs ${theme.mutedText}`}>
-                      <span>{study.category}</span>
-                      <span aria-hidden="true"> · </span>
-                      <span>Kajian Kes {study.year}</span>
-                    </div>
-
-                    <h3 className="text-lg font-bold tracking-tight group-hover:underline">
-                      {study.title}
+                  <div className="p-5">
+                    <h3 className="font-bold text-lg transition">
+                      {product.title}
                     </h3>
-
-                    <p className={`text-xs leading-relaxed line-clamp-2 ${theme.mutedText}`}>
-                      {study.challenge}
+                    <p
+                      className={`text-xs mt-1.5 leading-relaxed ${
+                        isDark ? 'text-gray-400' : 'text-gray-500'
+                      }`}
+                    >
+                      {product.desc}
                     </p>
+
+                    <ul className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700/60 space-y-1.5">
+                      {product.features.map((feat, idx) => (
+                        <li
+                          key={idx}
+                          className={`flex items-start gap-2 text-xs ${
+                            isDark ? 'text-gray-300' : 'text-gray-600'
+                          }`}
+                        >
+                          <Check
+                            className={`w-3.5 h-3.5 shrink-0 mt-0.5 ${accent.text}`}
+                          />
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
 
                 <div
-                  className={`px-6 py-4 border-t ${theme.border} flex items-center justify-between text-xs font-semibold`}
+                  className={`p-5 pt-4 flex items-center justify-between border-t mt-2 ${
+                    isDark ? 'border-gray-700/60' : 'border-gray-100'
+                  }`}
                 >
-                  <span className={theme.accentText}>Lihat Perincian Hasil Konversi</span>
-                  <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <div>
+                    <span className="text-[10px] text-gray-400 block font-medium">
+                      Anggaran Harga
+                    </span>
+                    <span
+                      className={`text-sm font-extrabold tabular-nums ${accent.priceText}`}
+                    >
+                      {product.price}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      openWhatsAppModal(`${product.title} (${product.price})`)
+                    }
+                    className={`${accent.btnDark} px-4 py-2 rounded-xl text-xs font-semibold transition shadow-sm cursor-pointer whitespace-nowrap`}
+                  >
+                    Pilih Pakej
+                  </button>
                 </div>
               </div>
             ))}
@@ -1137,112 +654,438 @@ Mohon kongsikan jadual pelaksanaan & langkah seterusnya. Terima kasih!`;
         </div>
       </section>
 
-      {/* B.6 FOOTER PROFESIONAL */}
-      <footer id="hubungi" className="py-14 px-6">
-        <div className="max-w-7xl mx-auto space-y-10">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+      {/* Portfolio & Kajian Kes (Case Studies) */}
+      <section
+        id="portfolio"
+        className={`py-16 border-t transition-colors ${
+          isDark
+            ? 'bg-gray-950 border-gray-800'
+            : 'bg-gray-50 border-gray-100'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
             <div>
-              <div className="text-xl font-bold tracking-tight">{brandName}</div>
-              <p className={`text-xs mt-1 ${theme.mutedText}`}>
-                Katalog Digital &amp; Ekosistem Laman Web Rasmi
+              <h2 className="text-3xl font-extrabold">
+                Portfolio &amp; Kajian Kes
+              </h2>
+              <p
+                className={`mt-2 text-sm ${
+                  isDark ? 'text-gray-400' : 'text-gray-500'
+                }`}
+              >
+                Klik pada mana-mana projek untuk melihat cabaran klien, solusi dibina, dan hasil konversi.
               </p>
             </div>
 
-            <div className={`flex flex-wrap items-center gap-6 text-xs font-medium ${theme.mutedText}`}>
-              <a href="#katalog" className="hover:underline">
-                Katalog Servis
-              </a>
-              <a href="#portfolio" className="hover:underline">
-                Portfolio &amp; Kajian Kes
-              </a>
-              <a href="#harga" className="hover:underline">
-                Senarai Harga
-              </a>
-              <button
-                type="button"
-                onClick={() => openBookingWithPackage(activePreset.defaultPackageLabel)}
-                className="hover:underline cursor-pointer"
-              >
-                Simulator Tempahan WhatsApp
-              </button>
+            <div className="flex flex-wrap gap-2">
+              {(['all', 'Korporat', 'Kreatif', 'E-Dagang'] as PortfolioCategory[]).map(
+                (cat) => {
+                  const active = portfolioFilter === cat;
+                  return (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setPortfolioFilter(cat)}
+                      className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer whitespace-nowrap ${
+                        active
+                          ? accent.tabActive
+                          : isDark
+                          ? 'bg-gray-900 text-gray-300 border border-gray-800'
+                          : 'bg-white text-gray-600 border border-gray-200'
+                      }`}
+                    >
+                      {cat === 'all' ? 'Semua Projek' : cat}
+                    </button>
+                  );
+                }
+              )}
             </div>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {filteredPortfolio.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => setActiveCaseStudy(item)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setActiveCaseStudy(item);
+                  }
+                }}
+                className={`cursor-pointer rounded-2xl p-6 border transition-all hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between space-y-6 ${
+                  isDark
+                    ? 'bg-gray-900 border-gray-800'
+                    : 'bg-white border-gray-200/80'
+                }`}
+              >
+                <div className="space-y-3">
+                  <div className="text-xs text-gray-400 font-medium">
+                    {item.category} · {item.client}
+                  </div>
+                  <h3 className="text-lg font-bold">{item.title}</h3>
+                  <div className="text-sm font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+                    {item.metric}
+                  </div>
+                  <p
+                    className={`text-xs leading-relaxed line-clamp-2 ${
+                      isDark ? 'text-gray-400' : 'text-gray-500'
+                    }`}
+                  >
+                    {item.challenge}
+                  </p>
+                </div>
+
+                <div
+                  className={`pt-4 border-t flex items-center justify-between text-xs font-semibold ${
+                    isDark ? 'border-gray-800' : 'border-gray-100'
+                  }`}
+                >
+                  <span className={`inline-flex items-center gap-1.5 ${accent.text}`}>
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Lihat Kajian Kes Penuh</span>
+                  </span>
+                  <ArrowUpRight className="w-4 h-4" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Seksyen Pakej Harga & Terma (Perbandingan / Ringkasan Pakej) */}
+      <section
+        id="harga"
+        className={`py-16 border-t transition-colors ${
+          isDark
+            ? 'bg-gray-900 border-gray-800'
+            : 'bg-white border-gray-100'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+          <div className="text-center max-w-2xl mx-auto">
+            <h2 className="text-3xl font-extrabold">
+              Perbandingan &amp; Ringkasan Pakej Harga
+            </h2>
+            <p
+              className={`mt-2 text-sm ${
+                isDark ? 'text-gray-400' : 'text-gray-500'
+              }`}
+            >
+              Senarai harga telus mengikut spesifikasi projek untuk{' '}
+              <span className="font-semibold">{brandName}</span>.
+            </p>
+          </div>
+
+          {/* Lencana Eksklusif Terma Bayaran Penuh 100% Upfront */}
           <div
-            className={`pt-8 border-t ${theme.border} flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs ${theme.mutedText}`}
+            className={`p-5 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+              isDark
+                ? 'bg-emerald-950/30 border-emerald-800/60 text-emerald-200'
+                : 'bg-emerald-50 border-emerald-200 text-emerald-950'
+            }`}
           >
-            <div>
-              &copy; {new Date().getFullYear()}{' '}
-              <span className="font-semibold">{brandName}</span>. Hak Cipta Terpelihara.
+            <div className="flex items-start md:items-center gap-3">
+              <ShieldCheck className="w-5 h-5 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5 md:mt-0" />
+              <div className="text-xs sm:text-sm font-bold">
+                Terma Bayaran Penuh (100% Upfront): Percuma Setup Domain/Hosting + Keutamaan
+                Giliran Projek (Fast-Track)
+              </div>
             </div>
-            <div className="font-semibold">
-              Direka &amp; Dibangunkan oleh ARASTECH / ARASSTUDIO
-            </div>
+            <button
+              type="button"
+              onClick={() =>
+                openWhatsAppModal(
+                  'Tuntut Terma 100% Upfront (Percuma Domain/Hosting + Fast-Track)'
+                )
+              }
+              className="text-xs font-bold underline underline-offset-4 whitespace-nowrap shrink-0 self-start md:self-center cursor-pointer"
+            >
+              Tuntut Tawaran Ini →
+            </button>
+          </div>
+
+          {/* Jadual Perbandingan Ringkas & Kemas */}
+          <div
+            className={`overflow-x-auto rounded-2xl border ${
+              isDark ? 'border-gray-800 bg-gray-950' : 'border-gray-200 bg-gray-50/50'
+            }`}
+          >
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr
+                  className={`border-b text-xs uppercase tracking-wider ${
+                    isDark
+                      ? 'border-gray-800 text-gray-400 bg-gray-900'
+                      : 'border-gray-200 text-gray-500 bg-gray-100/80'
+                  }`}
+                >
+                  <th className="py-4 px-5 font-bold">Kategori Pakej</th>
+                  <th className="py-4 px-5 font-bold">Skop &amp; Bilangan Halaman</th>
+                  <th className="py-4 px-5 font-bold">Tempoh Siap</th>
+                  <th className="py-4 px-5 font-bold">Julat Harga Rasmi</th>
+                  <th className="py-4 px-5 font-bold text-right">Tindakan</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-800 text-sm">
+                {CATALOG_PRODUCTS.map((pkg) => (
+                  <tr
+                    key={pkg.id}
+                    className={`transition-colors ${
+                      isDark ? 'hover:bg-gray-900/60' : 'hover:bg-white'
+                    }`}
+                  >
+                    <td className="py-4 px-5 font-bold whitespace-nowrap">
+                      {pkg.title}
+                    </td>
+                    <td
+                      className={`py-4 px-5 text-xs ${
+                        isDark ? 'text-gray-300' : 'text-gray-600'
+                      }`}
+                    >
+                      {pkg.pages}
+                    </td>
+                    <td className="py-4 px-5 text-xs font-mono tabular-nums whitespace-nowrap">
+                      {pkg.timeline}
+                    </td>
+                    <td
+                      className={`py-4 px-5 font-extrabold tabular-nums whitespace-nowrap ${accent.priceText}`}
+                    >
+                      {pkg.price}
+                    </td>
+                    <td className="py-4 px-5 text-right whitespace-nowrap">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openWhatsAppModal(`${pkg.title} (${pkg.price})`)
+                        }
+                        className={`${accent.bg} text-white text-xs font-semibold px-4 py-2 rounded-xl transition cursor-pointer`}
+                      >
+                        Tempah Pakej
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer Profesional */}
+      <footer
+        id="hubungi"
+        className={`border-t py-12 transition-colors ${
+          isDark
+            ? 'bg-gray-950 border-gray-800'
+            : 'bg-white border-gray-100'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <span className="font-extrabold text-xl">{brandName}</span>
+          <p
+            className={`text-sm mt-2 ${
+              isDark ? 'text-gray-400' : 'text-gray-500'
+            }`}
+          >
+            Solusi Rekaan Web, E-Dagang &amp; Kandungan Digital Profesional.
+          </p>
+          <div
+            className={`mt-6 text-xs border-t pt-6 ${
+              isDark
+                ? 'text-gray-400 border-gray-800'
+                : 'text-gray-400 border-gray-100'
+            }`}
+          >
+            &copy; 2026 <span className="font-semibold">{brandName}</span>. Hak
+            Cipta Terpelihara. <br />
+            <span className={`${accent.text} font-medium mt-1 inline-block`}>
+              Direka &amp; Dibangunkan oleh ARASTECH / ARASSTUDIO — Solusi Web &amp; Produksi Digital
+            </span>
           </div>
         </div>
       </footer>
 
-      {/* B.4 POP-UP MODAL KAJIAN KES */}
+      {/* Panel Kawalan Demo Terapung (Klien Presentation Widget) */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <div
+          className={`rounded-2xl shadow-2xl border p-4 w-80 transition-all duration-300 ${
+            isDark
+              ? 'bg-gray-900 border-gray-700 text-white'
+              : 'bg-white border-gray-200 text-gray-900'
+          }`}
+        >
+          <div
+            className={`flex items-center justify-between pb-3 border-b ${
+              isDark ? 'border-gray-800' : 'border-gray-100'
+            }`}
+          >
+            <span className="font-bold text-xs uppercase tracking-wider">
+              Panel Demo Klien
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsPanelOpen((prev) => !prev)}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer"
+              aria-label="Buka atau tutup panel demo"
+            >
+              {isPanelOpen ? (
+                <ChevronDown className="w-4 h-4" />
+              ) : (
+                <ChevronUp className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+
+          {isPanelOpen && (
+            <div className="pt-4 space-y-3">
+              <div
+                className={`text-[11px] p-2.5 rounded-lg font-medium ${
+                  isDark
+                    ? 'bg-blue-950/50 text-blue-300 border border-blue-800/50'
+                    : 'bg-blue-50 text-blue-700'
+                }`}
+              >
+                Demo Interaktif oleh <strong>ARASTECH / ARASSTUDIO</strong>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold mb-1">
+                  Nama Bisnes Klien:
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={clientInput}
+                    onChange={(e) => handleClientInputChange(e.target.value)}
+                    placeholder="Contoh: ZARA HOLDINGS"
+                    className={`w-full text-xs px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      isDark
+                        ? 'bg-gray-800 border-gray-700 text-white'
+                        : 'bg-white border-gray-200 text-gray-900'
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={resetClientName}
+                    className={`px-3 py-2 text-xs font-semibold rounded-xl cursor-pointer ${
+                      isDark
+                        ? 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+                        : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
+                    }`}
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold mb-1.5">
+                  Pratetap Industri:
+                </label>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {(
+                    [
+                      { key: 'corporate', label: 'Korporat' },
+                      { key: 'creative', label: 'Kreatif' },
+                      { key: 'ecommerce', label: 'E-Dagang' },
+                    ] as { key: PresetType; label: string }[]
+                  ).map((item) => {
+                    const active = preset === item.key;
+                    return (
+                      <button
+                        key={item.key}
+                        type="button"
+                        onClick={() => setPreset(item.key)}
+                        className={`text-[11px] py-2 px-2 rounded-lg font-semibold transition cursor-pointer ${
+                          active
+                            ? `${accent.bg} text-white shadow-sm`
+                            : isDark
+                            ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                            : 'bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Modal Kajian Kes (Case Study Pop-Up) */}
       {activeCaseStudy && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={() => setActiveCaseStudy(null)}
         >
           <div
-            className="w-full max-w-2xl rounded-xl border border-slate-200 bg-white text-slate-900 p-6 sm:p-8 shadow-2xl space-y-6"
+            className={`rounded-2xl max-w-lg w-full p-6 relative shadow-2xl border space-y-4 ${
+              isDark
+                ? 'bg-gray-900 border-gray-800 text-white'
+                : 'bg-white border-gray-100 text-gray-900'
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="text-xs font-medium text-slate-500">
-                  {activeCaseStudy.category} · {activeCaseStudy.clientSector} ·{' '}
-                  {activeCaseStudy.year}
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold mt-1 tracking-tight">
-                  {activeCaseStudy.title}
-                </h3>
+            <button
+              type="button"
+              onClick={() => setActiveCaseStudy(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div>
+              <div className="text-xs font-semibold text-gray-400">
+                {activeCaseStudy.category} · {activeCaseStudy.client}
               </div>
-              <button
-                type="button"
-                onClick={() => setActiveCaseStudy(null)}
-                className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer"
-                aria-label="Tutup modal kajian kes"
+              <h3 className="text-xl font-bold mt-1">{activeCaseStudy.title}</h3>
+            </div>
+
+            <div className="space-y-3 text-xs leading-relaxed">
+              <div
+                className={`p-3.5 rounded-xl border ${
+                  isDark
+                    ? 'bg-gray-800/70 border-gray-700'
+                    : 'bg-gray-50 border-gray-200'
+                }`}
               >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4 text-sm leading-relaxed">
-              <div className="p-4 rounded-lg bg-slate-50 border border-slate-200">
-                <div className="text-xs font-mono font-semibold text-slate-500 mb-1">
-                  01. CABARAN KLIEN
-                </div>
-                <p className="text-slate-700">{activeCaseStudy.challenge}</p>
+                <div className="font-bold mb-1">1. Cabaran Klien:</div>
+                <p className={isDark ? 'text-gray-300' : 'text-gray-600'}>
+                  {activeCaseStudy.challenge}
+                </p>
               </div>
-
-              <div className="p-4 rounded-lg bg-slate-50 border border-slate-200">
-                <div className="text-xs font-mono font-semibold text-slate-500 mb-1">
-                  02. SOLUSI DIBINA OLEH ARASTECH / ARASSTUDIO
-                </div>
-                <p className="text-slate-700">{activeCaseStudy.solution}</p>
+              <div
+                className={`p-3.5 rounded-xl border ${
+                  isDark
+                    ? 'bg-gray-800/70 border-gray-700'
+                    : 'bg-gray-50 border-gray-200'
+                }`}
+              >
+                <div className="font-bold mb-1">2. Solusi Dibina:</div>
+                <p className={isDark ? 'text-gray-300' : 'text-gray-600'}>
+                  {activeCaseStudy.solution}
+                </p>
               </div>
-
-              <div className="p-4 rounded-lg bg-emerald-50/80 border border-emerald-200">
-                <div className="text-xs font-mono font-semibold text-emerald-800 mb-1">
-                  03. HASIL KONVERSI &amp; IMPAK PERNIAGAAN
+              <div className="p-3.5 rounded-xl border bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-300">
+                <div className="font-bold mb-1">
+                  3. Hasil Konversi ({activeCaseStudy.metric}):
                 </div>
-                <p className="text-emerald-950 font-medium">{activeCaseStudy.result}</p>
-                <div className="mt-2 text-xs font-mono font-semibold text-emerald-700">
-                  Metrik Utama: {activeCaseStudy.headlineMetric} ({activeCaseStudy.secondaryMetric})
-                </div>
+                <p>{activeCaseStudy.result}</p>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
+            <div className="pt-2 flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setActiveCaseStudy(null)}
-                className="px-4 py-2.5 text-xs font-semibold rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 cursor-pointer"
+                className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer"
               >
                 Tutup
               </button>
@@ -1251,234 +1094,141 @@ Mohon kongsikan jadual pelaksanaan & langkah seterusnya. Terima kasih!`;
                 onClick={() => {
                   const title = activeCaseStudy.title;
                   setActiveCaseStudy(null);
-                  openBookingWithPackage(`Bina Solusi Seperti "${title}"`);
+                  openWhatsAppModal(`Projek Seperti: ${title}`);
                 }}
-                className="px-5 py-2.5 text-xs font-semibold rounded-lg bg-[#1E3A8A] text-white hover:bg-blue-900 cursor-pointer"
+                className={`${accent.bg} text-white px-4 py-2.5 rounded-xl text-xs font-semibold cursor-pointer`}
               >
-                Tempah Solusi Ini untuk {brandName}
+                Tempah Projek Seperti Ini
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* B.5 SIMULATOR TEMPAHAN WHATSAPP (Modal CTA) */}
-      {isBookingOpen && (
+      {/* Modal WhatsApp / Tempahan */}
+      {isWhatsAppModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-sm"
-          onClick={() => setIsBookingOpen(false)}
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={closeWhatsAppModal}
         >
           <div
-            className="w-full max-w-xl rounded-xl border border-slate-200 bg-white text-slate-900 p-6 sm:p-8 shadow-2xl space-y-5 max-h-[92vh] overflow-y-auto"
+            className={`rounded-2xl max-w-md w-full p-6 relative shadow-2xl border ${
+              isDark
+                ? 'bg-gray-900 border-gray-800 text-white'
+                : 'bg-white border-gray-100 text-gray-900'
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="text-xs font-medium text-slate-500">
-                  Simulator Tempahan WhatsApp · ARASTECH / ARASSTUDIO
-                </div>
-                <h3 className="text-xl font-bold mt-1 tracking-tight">
-                  Pengesahan Pakej Katalog untuk{' '}
-                  <span className="text-[#1E3A8A]">{brandName}</span>
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsBookingOpen(false)}
-                className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 cursor-pointer"
-                aria-label="Tutup modal tempahan"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={closeWhatsAppModal}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
 
-            <div className="space-y-4">
+            <h3 className="text-xl font-bold mb-2">
+              Tempahan / Pertanyaan Pakej
+            </h3>
+            <p
+              className={`text-sm mb-4 ${
+                isDark ? 'text-gray-400' : 'text-gray-500'
+              }`}
+            >
+              Sila semak butiran tempahan anda sebelum dihantar terus ke WhatsApp{' '}
+              <strong>ARASTECH / ARASSTUDIO</strong>.
+            </p>
+
+            <div className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Nama Klien / Wakil Syarikat
+                <label className="block text-xs font-semibold mb-1">
+                  Nama Anda / Wakil ({brandName}):
                 </label>
                 <input
                   type="text"
-                  value={waClientName}
-                  onChange={(e) => setWaClientName(e.target.value)}
-                  placeholder="Contoh: Tuan Ahmad Faris (Pengarah Urusan)"
-                  className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-slate-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-700"
+                  value={modalUserName}
+                  onChange={(e) => setModalUserName(e.target.value)}
+                  placeholder="Masukkan nama anda"
+                  className={`w-full text-sm px-3 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    isDark
+                      ? 'bg-gray-800 border-gray-700 text-white'
+                      : 'bg-white border-gray-200 text-gray-900'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Pakej / Produk Katalog Pilihan
+                <label className="block text-xs font-semibold mb-1">
+                  Pakej Dipilih:
                 </label>
                 <select
-                  value={waSelectedPackage}
-                  onChange={(e) => setWaSelectedPackage(e.target.value)}
-                  className="w-full px-3.5 py-2.5 text-sm rounded-lg border border-slate-300 text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-700"
+                  value={modalPackageName}
+                  onChange={(e) => setModalPackageName(e.target.value)}
+                  className={`w-full text-sm px-3 py-2.5 border rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    isDark
+                      ? 'bg-gray-800 border-gray-700 text-gray-200'
+                      : 'bg-gray-100 border-gray-200 text-gray-800'
+                  }`}
                 >
-                  {CATALOG_PRODUCTS.map((item) => (
-                    <option key={item.id} value={`${item.name} (${item.price})`}>
-                      {item.name} — {item.price} [{item.badge}]
+                  {CATALOG_PRODUCTS.map((p) => (
+                    <option key={p.id} value={`${p.title} (${p.price})`}>
+                      {p.title} ({p.price})
                     </option>
                   ))}
-                  <option value="Spesifikasi Kustom / Konsultasi Katalog">
-                    Spesifikasi Kustom / Konsultasi Katalog
+                  <option value="Pertanyaan Am Pelanggan">
+                    Pertanyaan Am Pelanggan / Custom
                   </option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                  Nota Projek &amp; Tarikh Sasaran Pelancaran
+                <label className="block text-xs font-semibold mb-1">
+                  Nota Tambahan:
                 </label>
                 <textarea
                   rows={2}
-                  value={waNotes}
-                  onChange={(e) => setWaNotes(e.target.value)}
-                  placeholder="Nyatakan objektif utama atau tarikh sasaran pelancaran..."
-                  className="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-700"
+                  value={modalNotes}
+                  onChange={(e) => setModalNotes(e.target.value)}
+                  className={`w-full text-xs px-3 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                    isDark
+                      ? 'bg-gray-800 border-gray-700 text-white'
+                      : 'bg-white border-gray-200 text-gray-900'
+                  }`}
                 />
               </div>
 
-              {/* Live WhatsApp Message Preview */}
-              <div className="p-4 rounded-lg bg-slate-950 text-slate-100 border border-slate-800 space-y-2">
-                <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
-                  <span>Pratonton Mesej Rasmi ke Tim ARASTECH / ARASSTUDIO:</span>
-                  <span className="text-emerald-400">wa.me/+601131738516</span>
-                </div>
-                <pre className="text-xs font-mono whitespace-pre-wrap leading-relaxed text-emerald-300">
-                  {whatsappMessage}
-                </pre>
+              <div className="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-xl border border-emerald-100 dark:border-emerald-800 text-xs text-emerald-800 dark:text-emerald-300">
+                <strong>Terma Bayaran Penuh (100% Upfront):</strong> Nikmati
+                percuma setup domain/hosting &amp; keutamaan giliran projek
+                (Fast-Track).
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
+            <div className="mt-6 flex gap-3">
               <button
                 type="button"
-                onClick={() => setIsBookingOpen(false)}
-                className="w-full sm:w-auto px-4 py-2.5 text-xs font-semibold rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-100 cursor-pointer"
+                onClick={closeWhatsAppModal}
+                className={`w-1/2 py-3 rounded-xl font-semibold text-sm transition cursor-pointer ${
+                  isDark
+                    ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
               >
-                Kembali ke Katalog
+                Batal
               </button>
               <a
-                href={whatsappUrl}
+                href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-semibold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors whitespace-nowrap"
+                className="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-600/20 transition flex items-center justify-center space-x-2"
               >
-                <Send className="w-4 h-4" />
-                <span>Hantar ke WhatsApp Sekarang</span>
+                <MessageCircle className="w-4 h-4" />
+                <span>Hantar WhatsApp</span>
               </a>
             </div>
           </div>
         </div>
       )}
-
-      {/* A. PANEL KAWALAN DEMO KLIEN (Floating Widget at Bottom-Right Corner) */}
-      <aside
-        aria-label="Panel Kawalan Demo Klien"
-        className="fixed bottom-5 right-5 z-40 w-[340px] sm:w-[385px] rounded-xl border border-slate-700/90 bg-slate-950/95 text-slate-100 shadow-2xl backdrop-blur-md overflow-hidden"
-      >
-        {/* A.1 Official Developer Badge Header */}
-        <div className="px-4 py-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <Sliders className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            <span className="text-[11px] font-bold tracking-wide text-amber-400 truncate">
-              Demo Interaktif oleh ARASTECH / ARASSTUDIO
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setIsDemoPanelMinimized((prev) => !prev)}
-            className="px-2 py-1 text-[11px] font-semibold rounded bg-slate-800 hover:bg-slate-700 text-slate-200 inline-flex items-center gap-1 shrink-0 cursor-pointer"
-          >
-            {isDemoPanelMinimized ? (
-              <>
-                <span>Buka</span>
-                <ChevronUp className="w-3.5 h-3.5" />
-              </>
-            ) : (
-              <>
-                <span>Tutup</span>
-                <ChevronDown className="w-3.5 h-3.5" />
-              </>
-            )}
-          </button>
-        </div>
-
-        {!isDemoPanelMinimized && (
-          <div className="p-4 space-y-4">
-            {/* A.2 & A.3 Live Client Business Name Input + Reset */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label
-                  htmlFor="client-brand-input"
-                  className="text-xs font-semibold text-slate-200"
-                >
-                  1. Nama Bisnes Klien (Live Update)
-                </label>
-                <span className="text-[10px] font-mono text-slate-400">
-                  Asal: ARASSTUDIO
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  id="client-brand-input"
-                  type="text"
-                  value={brandInput}
-                  onChange={(e) => handleBrandChange(e.target.value)}
-                  placeholder="Taip nama bisnes klien..."
-                  className="w-full px-3 py-2 text-xs rounded-lg bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400"
-                />
-                <button
-                  type="button"
-                  onClick={handleResetBrand}
-                  title="Reset kepada nama asal ARASSTUDIO"
-                  className="px-3 py-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 inline-flex items-center gap-1 shrink-0 cursor-pointer"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Reset</span>
-                </button>
-              </div>
-            </div>
-
-            {/* A.4 3 Industry Preset Buttons (Theme & Content Switcher) */}
-            <div>
-              <div className="text-xs font-semibold text-slate-200 mb-1.5">
-                2. Pilih Pratetap Industri (Tema &amp; Katalog)
-              </div>
-              <div className="grid grid-cols-1 gap-2">
-                {(Object.keys(PRESETS) as PresetKey[]).map((key, idx) => {
-                  const item = PRESETS[key];
-                  const active = preset === key;
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      onClick={() => handlePresetSwitch(key)}
-                      className={`px-3.5 py-2.5 rounded-lg border text-left transition-all flex items-center justify-between gap-2 cursor-pointer ${
-                        active
-                          ? 'bg-amber-400 text-slate-950 border-amber-400 font-bold shadow-sm'
-                          : 'bg-slate-900/90 text-slate-200 border-slate-800 hover:border-slate-700 font-medium'
-                      }`}
-                    >
-                      <span className="text-xs whitespace-nowrap">
-                        Preset {idx + 1}: {item.label}
-                      </span>
-                      <span
-                        className={`text-[10px] truncate ${
-                          active ? 'text-slate-900 font-semibold' : 'text-slate-400'
-                        }`}
-                      >
-                        {item.badgeDesc}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-      </aside>
     </div>
   );
 }
