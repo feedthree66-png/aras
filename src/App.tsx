@@ -71,6 +71,74 @@ const CATALOG_PRODUCTS: CatalogProduct[] = [
   },
 ];
 
+const COMPARISON_PACKAGES = [
+  {
+    categoryLabel: 'Landing Page',
+    title: 'Simple & Pantas',
+    price: 'RM500 - RM1.5K',
+    popular: false,
+    modalLabel: 'Landing Page / Simple (RM500 – RM1,500)',
+    features: ['1 Halaman Penuh', 'Sesuai Kempen Iklan', 'Butang WhatsApp'],
+  },
+  {
+    categoryLabel: 'Website Bisnes',
+    title: 'Korporat PKS',
+    price: 'RM1.5K - RM5K',
+    popular: true,
+    modalLabel: 'Website Perniagaan / Syarikat (RM1,500 – RM5,000)',
+    features: [
+      '3 hingga 10 Halaman',
+      'Sistem CMS Mudah Alih',
+      'Halaman Servis & Hubungi',
+    ],
+  },
+  {
+    categoryLabel: 'E-Dagang',
+    title: 'Online Store',
+    price: 'RM3.5K - RM10K+',
+    popular: false,
+    modalLabel: 'Website E-Dagang / Store (RM3,500 – RM10,000+)',
+    features: [
+      'Troli Belanja & Checkout',
+      'Payment Gateway (FPX)',
+      'Pengurusan Produk',
+    ],
+  },
+  {
+    categoryLabel: 'Custom & Advanced',
+    title: 'Sistem Web Khas',
+    price: 'RM8K - RM20K+',
+    popular: false,
+    modalLabel: 'Website Custom / Sistem Web (RM8,000 – RM20,000+)',
+    features: [
+      'Sistem Tempahan / Booking',
+      'Portal Keahlian (Membership)',
+      'Fungsi API Khusus',
+    ],
+  },
+];
+
+const TESTIMONIALS = [
+  {
+    quote:
+      '"Landing page yang dibina sangat pantas dan kemas. Jualan produk saya meningkat sejak hari pertama kempen iklan dijalankan!"',
+    name: 'En. Zulkifli',
+    role: 'Founder, Zul Store',
+  },
+  {
+    quote:
+      '"Servis terbaik daripada ARASTECH. Website korporat syarikat kami kini nampak jauh lebih profesional di mata klien antarabangsa."',
+    name: 'Puan Sarah',
+    role: 'Pengarah Urusan, Sarah Logistics',
+  },
+  {
+    quote:
+      '"Sistem e-dagang yang dibangunkan sangat mudah diuruskan. Pelanggan boleh bayar terus guna FPX tanpa masalah."',
+    name: 'Dr. Amin',
+    role: 'Founder, Organic Health Hub',
+  },
+];
+
 export default function App() {
   const [brandName, setBrandName] = useState<string>('ARASSTUDIO');
   const [clientNameInput, setClientNameInput] = useState<string>('');
@@ -97,6 +165,7 @@ export default function App() {
         heroBadge:
           'bg-purple-900/30 text-purple-300 border-purple-800',
         badgeBg: 'bg-purple-600',
+        borderPopular: 'border-purple-600',
         shadow: 'shadow-purple-600/20',
       };
     }
@@ -107,6 +176,7 @@ export default function App() {
         heroBadge:
           'bg-orange-50 text-orange-600 border-orange-200',
         badgeBg: 'bg-orange-600',
+        borderPopular: 'border-orange-600',
         shadow: 'shadow-orange-600/20',
       };
     }
@@ -116,6 +186,7 @@ export default function App() {
       heroBadge:
         'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-800',
       badgeBg: 'bg-blue-600',
+      borderPopular: 'border-blue-600',
       shadow: 'shadow-blue-600/20',
     };
   }, [preset]);
@@ -199,10 +270,16 @@ export default function App() {
                 Katalog Servis
               </a>
               <a
-                href="#harga"
+                href="#perbandingan"
                 className="hover:text-blue-600 dark:hover:text-white transition whitespace-nowrap"
               >
-                Pakej Harga
+                Perbandingan
+              </a>
+              <a
+                href="#testimoni"
+                className="hover:text-blue-600 dark:hover:text-white transition whitespace-nowrap"
+              >
+                Testimoni
               </a>
               <a
                 href="#hubungi"
@@ -274,7 +351,7 @@ export default function App() {
           id="katalog"
           className="py-16 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 transition-colors"
         >
-          <div id="harga" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
                 Katalog Pakej &amp; Contoh Reka Bentuk
@@ -374,10 +451,128 @@ export default function App() {
                       onClick={() =>
                         openWhatsAppModal(`${product.title} (${product.price})`)
                       }
-                      className={`bg-gray-900 dark:bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-blue-600 dark:hover:bg-blue-700 transition shadow-sm cursor-pointer whitespace-nowrap`}
+                      className="bg-gray-900 dark:bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-blue-600 dark:hover:bg-blue-700 transition shadow-sm cursor-pointer whitespace-nowrap"
                     >
                       Pilih Pakej
                     </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Seksyen Perbandingan Pakej */}
+        <section
+          id="perbandingan"
+          className="py-16 bg-gray-50 dark:bg-gray-950 transition-colors border-t border-gray-100 dark:border-gray-800"
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
+                Perbandingan Pakej Servis
+              </h2>
+              <p className="text-gray-500 dark:text-gray-400 mt-2">
+                Pilih skala yang paling bertepatan dengan keperluan perniagaan{' '}
+                <span className="font-semibold text-gray-800 dark:text-gray-200">
+                  {brandName}
+                </span>
+                .
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {COMPARISON_PACKAGES.map((pkg, idx) => (
+                <div
+                  key={idx}
+                  className={`bg-white dark:bg-gray-900 p-6 rounded-2xl flex flex-col justify-between relative ${
+                    pkg.popular
+                      ? `border-2 ${accent.borderPopular} shadow-lg`
+                      : 'border border-gray-100 dark:border-gray-800 shadow-sm'
+                  }`}
+                >
+                  {pkg.popular && (
+                    <span
+                      className={`absolute -top-3 left-1/2 -translate-x-1/2 ${accent.badgeBg} text-white text-[10px] font-bold px-3 py-1 rounded-md uppercase whitespace-nowrap`}
+                    >
+                      Paling Popular
+                    </span>
+                  )}
+
+                  <div>
+                    <span
+                      className={`text-xs font-bold uppercase ${accent.primaryText}`}
+                    >
+                      {pkg.categoryLabel}
+                    </span>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-1">
+                      {pkg.title}
+                    </h3>
+                    <p className="text-2xl font-extrabold text-gray-900 dark:text-white mt-4 tabular-nums">
+                      {pkg.price}
+                    </p>
+                    <ul className="mt-6 space-y-3 text-xs text-gray-600 dark:text-gray-300">
+                      {pkg.features.map((feat, fIdx) => (
+                        <li key={fIdx} className="flex items-center gap-2">
+                          <span className={accent.primaryText}>✓</span>
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => openWhatsAppModal(pkg.modalLabel)}
+                    className={`mt-8 w-full py-2.5 rounded-xl text-xs font-semibold text-white transition cursor-pointer ${
+                      pkg.popular
+                        ? accent.primaryBg
+                        : 'bg-gray-900 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700'
+                    }`}
+                  >
+                    Pilih Pakej
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Seksyen Testimoni Klien */}
+        <section
+          id="testimoni"
+          className="py-16 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 transition-colors"
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
+                Apa Kata Klien Kami?
+              </h2>
+              <p className="text-gray-500 dark:text-gray-400 mt-2">
+                Maklum balas daripada usahawan yang telah mendapatkan servis
+                kami.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {TESTIMONIALS.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex text-amber-400 mb-3 text-sm">
+                      ★★★★★
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 italic leading-relaxed">
+                      {item.quote}
+                    </p>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <h4 className="font-bold text-sm text-gray-900 dark:text-white">
+                      {item.name}
+                    </h4>
+                    <span className="text-xs text-gray-400">{item.role}</span>
                   </div>
                 </div>
               ))}
