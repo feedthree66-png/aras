@@ -71,6 +71,50 @@ const CATALOG_PRODUCTS: CatalogProduct[] = [
   },
 ];
 
+const CALC_BASE_OPTIONS = [
+  {
+    value: 800,
+    label: 'Landing Page / Simple (Anggaran RM800)',
+    shortName: 'Landing Page / Simple',
+  },
+  {
+    value: 2500,
+    label: 'Website Perniagaan / Syarikat (Anggaran RM2,500)',
+    shortName: 'Website Perniagaan / Syarikat',
+  },
+  {
+    value: 5000,
+    label: 'Website E-Dagang / Store (Anggaran RM5,000)',
+    shortName: 'Website E-Dagang / Store',
+  },
+  {
+    value: 10000,
+    label: 'Sistem Web / Custom (Anggaran RM10,000)',
+    shortName: 'Sistem Web / Custom',
+  },
+];
+
+const CALC_ADDON_OPTIONS = [
+  {
+    id: 'fpx',
+    value: 500,
+    label: 'Integrasi Payment Gateway (FPX / Billplz) (+RM500)',
+    shortName: 'Payment Gateway FPX',
+  },
+  {
+    id: 'multilang',
+    value: 300,
+    label: 'Sokongan Multi-Bahasa (BM & BI) (+RM300)',
+    shortName: 'Multi-Bahasa (BM & BI)',
+  },
+  {
+    id: 'booking',
+    value: 800,
+    label: 'Sistem Tempahan / Booking Khas (+RM800)',
+    shortName: 'Sistem Tempahan Khas',
+  },
+];
+
 const COMPARISON_PACKAGES = [
   {
     categoryLabel: 'Landing Page',
@@ -139,6 +183,25 @@ const TESTIMONIALS = [
   },
 ];
 
+const FAQ_ITEMS = [
+  {
+    question:
+      'Berapa lamakah masa yang diambil untuk menyiapkan sebuah website?',
+    answer:
+      'Bagi pakej Landing Page, biasanya siap dalam masa 3 hingga 5 hari bekerja. Untuk Website Korporat mengambil masa 1-2 minggu, manakala E-Dagang atau Sistem Custom bergantung pada kompleksiti (biasanya 2-4 minggu).',
+  },
+  {
+    question: 'Adakah domain dan hosting disediakan sekali?',
+    answer:
+      'Ya! Di bawah terma bayaran penuh (100% upfront), kami sediakan percuma setup domain (.com / .com.my) dan hosting berkelajuan tinggi untuk tahun pertama anda.',
+  },
+  {
+    question: 'Bolehkah saya mengemas kini kandungan website sendiri nanti?',
+    answer:
+      'Sudah tentu. Kami akan sediakan sistem pengurusan kandungan (CMS) yang mesra pengguna berserta panduan video ringkas cara menukar teks, gambar, dan harga produk.',
+  },
+];
+
 export default function App() {
   const [brandName, setBrandName] = useState<string>('ARASSTUDIO');
   const [clientNameInput, setClientNameInput] = useState<string>('');
@@ -146,6 +209,13 @@ export default function App() {
   const [catalogFilter, setCatalogFilter] = useState<CatalogCategory>('all');
   const [isPanelHidden, setIsPanelHidden] = useState<boolean>(false);
   const [failedImages, setFailedImages] = useState<Record<number, boolean>>({});
+  const [openFaqIndices, setOpenFaqIndices] = useState<Record<number, boolean>>({
+    0: true,
+  });
+
+  // Kalkulator Anggaran Kos State
+  const [calcBase, setCalcBase] = useState<number>(800);
+  const [selectedAddons, setSelectedAddons] = useState<Record<string, boolean>>({});
 
   // WhatsApp Modal State
   const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState<boolean>(false);
@@ -196,6 +266,36 @@ export default function App() {
     return CATALOG_PRODUCTS.filter((p) => p.category === catalogFilter);
   }, [catalogFilter]);
 
+  const calcTotal = useMemo(() => {
+    const addonsSum = CALC_ADDON_OPTIONS.reduce(
+      (sum, addon) => (selectedAddons[addon.id] ? sum + addon.value : sum),
+      0
+    );
+    return calcBase + addonsSum;
+  }, [calcBase, selectedAddons]);
+
+  const toggleAddon = (id: string) => {
+    setSelectedAddons((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const bookCustomPackage = () => {
+    const baseItem =
+      CALC_BASE_OPTIONS.find((opt) => opt.value === calcBase) ||
+      CALC_BASE_OPTIONS[0];
+    const activeAddons = CALC_ADDON_OPTIONS.filter(
+      (addon) => selectedAddons[addon.id]
+    ).map((addon) => addon.shortName);
+    const addonSuffix =
+      activeAddons.length > 0 ? ` + [${activeAddons.join(', ')}]` : '';
+    const formattedTotal = `RM${calcTotal.toLocaleString('en-MY')}`;
+    openWhatsAppModal(
+      `${baseItem.shortName}${addonSuffix} (Anggaran ${formattedTotal})`
+    );
+  };
+
   const handleClientInput = (value: string) => {
     setClientNameInput(value);
     setBrandName(value.trim() || 'ARASSTUDIO');
@@ -204,6 +304,13 @@ export default function App() {
   const resetClientName = () => {
     setClientNameInput('');
     setBrandName('ARASSTUDIO');
+  };
+
+  const toggleFaq = (idx: number) => {
+    setOpenFaqIndices((prev) => ({
+      ...prev,
+      [idx]: !prev[idx],
+    }));
   };
 
   const openWhatsAppModal = (packageName: string) => {
@@ -254,12 +361,17 @@ export default function App() {
               >
                 {brandName.charAt(0).toUpperCase()}
               </div>
-              <span
-                id="navBrandName"
-                className="font-extrabold text-lg tracking-tight text-gray-900 dark:text-white whitespace-nowrap"
-              >
-                {brandName}
-              </span>
+              <div>
+                <span
+                  id="navBrandName"
+                  className="font-extrabold text-lg tracking-tight text-gray-900 dark:text-white whitespace-nowrap block leading-tight"
+                >
+                  {brandName}
+                </span>
+                <span className="block text-[10px] text-gray-400 font-medium tracking-wider uppercase">
+                  Digital Agency
+                </span>
+              </div>
             </a>
 
             <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -270,16 +382,22 @@ export default function App() {
                 Katalog Servis
               </a>
               <a
-                href="#perbandingan"
+                href="#kalkulator"
                 className="hover:text-blue-600 dark:hover:text-white transition whitespace-nowrap"
               >
-                Perbandingan
+                Kalkulator Kos
               </a>
               <a
                 href="#testimoni"
                 className="hover:text-blue-600 dark:hover:text-white transition whitespace-nowrap"
               >
                 Testimoni
+              </a>
+              <a
+                href="#faq"
+                className="hover:text-blue-600 dark:hover:text-white transition whitespace-nowrap"
+              >
+                FAQ
               </a>
               <a
                 href="#hubungi"
@@ -462,10 +580,105 @@ export default function App() {
           </div>
         </section>
 
+        {/* Seksyen Kalkulator Anggaran Kos Interaktif */}
+        <section
+          id="kalkulator"
+          className="py-16 bg-gray-50 dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 transition-colors"
+        >
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
+                Kalkulator Anggaran Kos
+              </h2>
+              <p className="text-gray-500 dark:text-gray-400 mt-2">
+                Pilih spesifikasi yang anda perlukan dan lihat anggaran harga
+                secara langsung (<em>live</em>).
+              </p>
+            </div>
+
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 shadow-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-6">
+                  <div>
+                    <label
+                      htmlFor="calcBase"
+                      className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2"
+                    >
+                      1. Pilih Jenis Website Asas:
+                    </label>
+                    <select
+                      id="calcBase"
+                      value={calcBase}
+                      onChange={(e) => setCalcBase(Number(e.target.value))}
+                      className="w-full p-3 border border-gray-200 rounded-xl dark:bg-gray-800 dark:border-gray-700 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      {CALC_BASE_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">
+                      2. Tambahan Modul &amp; Fungsi:
+                    </label>
+                    <div className="space-y-2.5 text-sm text-gray-600 dark:text-gray-300">
+                      {CALC_ADDON_OPTIONS.map((addon) => (
+                        <label
+                          key={addon.id}
+                          className="flex items-center gap-2.5 cursor-pointer select-none"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={!!selectedAddons[addon.id]}
+                            onChange={() => toggleAddon(addon.id)}
+                            className="calc-addon w-4 h-4 text-blue-600 rounded"
+                          />
+                          <span>{addon.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-2xl border border-blue-100 dark:border-blue-800 flex flex-col justify-between text-center">
+                  <div>
+                    <span
+                      className={`text-xs font-bold uppercase tracking-wider ${accent.primaryText}`}
+                    >
+                      Anggaran Keseluruhan
+                    </span>
+                    <div
+                      id="calcTotal"
+                      className="text-4xl font-extrabold text-gray-900 dark:text-white mt-4 tabular-nums"
+                    >
+                      RM{calcTotal.toLocaleString('en-MY')}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                      *Termasuk percuma setup domain &amp; hosting setahun di
+                      bawah terma 100% upfront.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={bookCustomPackage}
+                    className={`mt-6 w-full ${accent.primaryBg} text-white py-3 rounded-xl font-semibold text-sm shadow-lg ${accent.shadow} transition cursor-pointer`}
+                  >
+                    Tempah Spesifikasi Ini via WhatsApp
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Seksyen Perbandingan Pakej */}
         <section
           id="perbandingan"
-          className="py-16 bg-gray-50 dark:bg-gray-950 transition-colors border-t border-gray-100 dark:border-gray-800"
+          className="py-16 bg-white dark:bg-gray-900 transition-colors border-t border-gray-100 dark:border-gray-800"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
@@ -485,7 +698,7 @@ export default function App() {
               {COMPARISON_PACKAGES.map((pkg, idx) => (
                 <div
                   key={idx}
-                  className={`bg-white dark:bg-gray-900 p-6 rounded-2xl flex flex-col justify-between relative ${
+                  className={`bg-gray-50 dark:bg-gray-800/50 p-6 rounded-2xl flex flex-col justify-between relative ${
                     pkg.popular
                       ? `border-2 ${accent.borderPopular} shadow-lg`
                       : 'border border-gray-100 dark:border-gray-800 shadow-sm'
@@ -541,7 +754,7 @@ export default function App() {
         {/* Seksyen Testimoni Klien */}
         <section
           id="testimoni"
-          className="py-16 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 transition-colors"
+          className="py-16 bg-gray-50 dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 transition-colors"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
@@ -558,7 +771,7 @@ export default function App() {
               {TESTIMONIALS.map((item, idx) => (
                 <div
                   key={idx}
-                  className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 flex flex-col justify-between"
+                  className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col justify-between shadow-sm"
                 >
                   <div>
                     <div className="flex text-amber-400 mb-3 text-sm">
@@ -580,10 +793,57 @@ export default function App() {
           </div>
         </section>
 
+        {/* Seksyen Soalan Lazim (FAQ) */}
+        <section
+          id="faq"
+          className="py-16 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 transition-colors"
+        >
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
+                Soalan Lazim (FAQ)
+              </h2>
+              <p className="text-gray-500 dark:text-gray-400 mt-2">
+                Segala yang anda perlu tahu mengenai proses pembangunan web.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {FAQ_ITEMS.map((faq, idx) => {
+                const isOpen = !!openFaqIndices[idx];
+                return (
+                  <div
+                    key={idx}
+                    className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleFaq(idx)}
+                      className="w-full p-5 text-left font-bold text-gray-900 dark:text-white flex justify-between items-center gap-4 cursor-pointer"
+                    >
+                      <span>{faq.question}</span>
+                      <ChevronDown
+                        className={`w-5 h-5 shrink-0 transition-transform ${
+                          isOpen ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </button>
+                    {isOpen && (
+                      <div className="px-5 pb-5 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                        {faq.answer}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
         {/* Footer Profesional */}
         <footer
           id="hubungi"
-          className="bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 py-12 transition-colors"
+          className="bg-gray-50 dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 py-12 transition-colors"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <span
@@ -595,7 +855,7 @@ export default function App() {
             <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
               Solusi Rekaan Web, E-Dagang &amp; Kandungan Digital Profesional.
             </p>
-            <div className="mt-6 text-xs text-gray-400 border-t border-gray-100 dark:border-gray-800 pt-6">
+            <div className="mt-6 text-xs text-gray-400 border-t border-gray-200 dark:border-gray-800 pt-6">
               &copy; 2026 <span id="copyrightName">{brandName}</span>. Hak Cipta
               Terpelihara. <br />
               <span
