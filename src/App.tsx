@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   Sparkles,
   ChevronDown,
@@ -13,10 +13,17 @@ import {
   Building2,
   ShoppingBag,
   Cpu,
+  Film,
 } from 'lucide-react';
 
 type PresetType = 'corporate' | 'creative' | 'ecommerce';
-type CatalogCategory = 'all' | 'landing' | 'corporate' | 'ecommerce' | 'custom';
+type CatalogCategory =
+  | 'all'
+  | 'landing'
+  | 'corporate'
+  | 'ecommerce'
+  | 'custom'
+  | 'animation';
 
 interface CatalogProduct {
   id: number;
@@ -26,6 +33,67 @@ interface CatalogProduct {
   price: string;
   desc: string;
   image: string;
+  motionCapabilities?: string[];
+}
+
+interface RevealOnScrollProps {
+  children: React.ReactNode;
+  delayMs?: number;
+  className?: string;
+}
+
+function RevealOnScroll({
+  children,
+  delayMs = 0,
+  className = '',
+}: RevealOnScrollProps) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsVisible(true);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      {
+        threshold: 0.12,
+        rootMargin: '0px 0px -40px 0px',
+      }
+    );
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      style={{ transitionDelay: `${delayMs}ms` }}
+      className={`transition-all duration-700 ease-out will-change-transform ${
+        isVisible
+          ? 'opacity-100 translate-y-0'
+          : 'opacity-0 translate-y-8'
+      } ${className}`}
+    >
+      {children}
+    </div>
+  );
 }
 
 const CATALOG_PRODUCTS: CatalogProduct[] = [
@@ -35,9 +103,10 @@ const CATALOG_PRODUCTS: CatalogProduct[] = [
     badge: 'Paling Popular',
     title: 'Landing Page / Simple',
     price: 'RM500 – RM1,500',
-    desc: 'Sesuai untuk kempen promosi, produk tunggal, atau profil perniagaan asas (1 Halaman).',
+    desc: 'Sesuai untuk kempen promosi, produk tunggal, atau profil perniagaan asas (1 Halaman) dengan animasi skrol moden.',
     image:
       'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=600&q=80',
+    motionCapabilities: ['Scroll-Reveal Motion', 'Promo Video Embed'],
   },
   {
     id: 2,
@@ -48,6 +117,7 @@ const CATALOG_PRODUCTS: CatalogProduct[] = [
     desc: '3 hingga 10 halaman profesional merangkumi "Tentang Kami", "Perkhidmatan", & "Hubungi Kami".',
     image:
       'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=600&q=80',
+    motionCapabilities: ['Hero Video Background', 'Interactive Transitions'],
   },
   {
     id: 3,
@@ -68,6 +138,36 @@ const CATALOG_PRODUCTS: CatalogProduct[] = [
     desc: 'Sistem tempahan khas (booking system), portal keahlian, atau aplikasi web berprestasi tinggi.',
     image:
       'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    id: 5,
+    category: 'animation',
+    badge: 'Video & Motion AI',
+    title: 'Produksi Video AI & Motion Design',
+    price: 'RM800 – RM3,500',
+    desc: 'Penerbitan video iklan komersial AI, animasi logo 3D, explainer video & visual motion graphics berimpak tinggi.',
+    image:
+      'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=600&q=80',
+    motionCapabilities: [
+      'AI Commercial Video',
+      '3D Logo & Motion Graphics',
+      'Social Reels Animation',
+    ],
+  },
+  {
+    id: 6,
+    category: 'animation',
+    badge: 'Interactive Motion',
+    title: 'Website Interaktif 3D & Animasi Web',
+    price: 'RM2,500 – RM7,500',
+    desc: 'Pengalaman web sinematik dengan animasi skrol interaktif (GSAP / Lottie), mikro-interaksi & showreel video HD.',
+    image:
+      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80',
+    motionCapabilities: [
+      'GSAP Scroll Choreography',
+      'Lottie & SVG Motion',
+      'Full-Screen Showreel',
+    ],
   },
 ];
 
@@ -263,6 +363,13 @@ export default function App() {
 
   const filteredProducts = useMemo(() => {
     if (catalogFilter === 'all') return CATALOG_PRODUCTS;
+    if (catalogFilter === 'animation') {
+      return CATALOG_PRODUCTS.filter(
+        (p) =>
+          p.category === 'animation' ||
+          (p.motionCapabilities && p.motionCapabilities.length > 0)
+      );
+    }
     return CATALOG_PRODUCTS.filter((p) => p.category === catalogFilter);
   }, [catalogFilter]);
 
@@ -336,6 +443,8 @@ export default function App() {
         ? Building2
         : category === 'ecommerce'
         ? ShoppingBag
+        : category === 'animation'
+        ? Film
         : Cpu;
     return (
       <div className="w-full h-full bg-gradient-to-br from-slate-800 via-slate-900 to-blue-950 flex flex-col items-center justify-center p-6 text-white">
@@ -470,7 +579,7 @@ export default function App() {
           className="py-16 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 transition-colors"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
+            <RevealOnScroll className="text-center mb-12">
               <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
                 Katalog Pakej &amp; Contoh Reka Bentuk
               </h2>
@@ -488,6 +597,7 @@ export default function App() {
                     { key: 'corporate', label: 'Website Bisnes' },
                     { key: 'ecommerce', label: 'E-Dagang' },
                     { key: 'custom', label: 'Sistem Custom' },
+                    { key: 'animation', label: 'Animation' },
                   ] as { key: CatalogCategory; label: string }[]
                 ).map((tab) => {
                   const active = catalogFilter === tab.key;
@@ -496,85 +606,107 @@ export default function App() {
                       key={tab.key}
                       type="button"
                       onClick={() => setCatalogFilter(tab.key)}
-                      className={`catalog-tab px-4 py-2 rounded-xl text-sm transition cursor-pointer whitespace-nowrap ${
+                      className={`catalog-tab px-4 py-2 rounded-xl text-sm transition cursor-pointer whitespace-nowrap inline-flex items-center gap-1.5 ${
                         active
                           ? `${accent.primaryBg} text-white font-semibold shadow-sm`
                           : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 font-medium'
                       }`}
                     >
-                      {tab.label}
+                      {tab.key === 'animation' && (
+                        <Film className="w-3.5 h-3.5" />
+                      )}
+                      <span>{tab.label}</span>
                     </button>
                   );
                 })}
               </div>
-            </div>
+            </RevealOnScroll>
 
             {/* Grid Katalog Produk & Contoh Design */}
             <div
               id="catalogGrid"
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
             >
-              {filteredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between"
+              {filteredProducts.map((product, index) => (
+                <RevealOnScroll
+                  key={`${catalogFilter}-${product.id}`}
+                  delayMs={index * 110}
+                  className="h-full"
                 >
-                  <div>
-                    <div className="relative overflow-hidden bg-gray-100 dark:bg-gray-900 aspect-[16/10]">
-                      {!failedImages[product.id] ? (
-                        <img
-                          src={product.image}
-                          alt={product.title}
-                          referrerPolicy="no-referrer"
-                          onError={() =>
-                            setFailedImages((prev) => ({
-                              ...prev,
-                              [product.id]: true,
-                            }))
-                          }
-                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                        />
-                      ) : (
-                        renderFallbackArtwork(product.category)
-                      )}
-                      <span
-                        className={`absolute top-3 left-3 ${accent.badgeBg} text-white text-[10px] px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wider`}
-                      >
-                        {product.badge}
-                      </span>
-                    </div>
-                    <div className="p-5">
-                      <h3 className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
-                        {product.title}
-                      </h3>
-                      <p className="text-gray-500 dark:text-gray-400 text-xs mt-1.5 leading-relaxed">
-                        {product.desc}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-5 pt-4 flex items-center justify-between border-t border-gray-100 dark:border-gray-700/50 mt-4">
+                  <div className="h-full bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col justify-between">
                     <div>
-                      <span className="text-[10px] text-gray-400 block font-medium">
-                        Anggaran Harga
-                      </span>
-                      <span
-                        className={`text-sm font-extrabold tabular-nums ${accent.primaryText}`}
-                      >
-                        {product.price}
-                      </span>
+                      <div className="relative overflow-hidden bg-gray-100 dark:bg-gray-900 aspect-[16/10]">
+                        {!failedImages[product.id] ? (
+                          <img
+                            src={product.image}
+                            alt={product.title}
+                            referrerPolicy="no-referrer"
+                            onError={() =>
+                              setFailedImages((prev) => ({
+                                ...prev,
+                                [product.id]: true,
+                              }))
+                            }
+                            className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                          />
+                        ) : (
+                          renderFallbackArtwork(product.category)
+                        )}
+                        <span
+                          className={`absolute top-3 left-3 ${accent.badgeBg} text-white text-[10px] px-2.5 py-1 rounded-md font-bold shadow-sm uppercase tracking-wider`}
+                        >
+                          {product.badge}
+                        </span>
+                      </div>
+                      <div className="p-5">
+                        <h3 className="font-bold text-lg text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
+                          {product.title}
+                        </h3>
+                        <p className="text-gray-500 dark:text-gray-400 text-xs mt-1.5 leading-relaxed">
+                          {product.desc}
+                        </p>
+                        {product.motionCapabilities &&
+                          product.motionCapabilities.length > 0 && (
+                            <div className="mt-3 flex flex-wrap gap-1.5">
+                              {product.motionCapabilities.map((cap, capIdx) => (
+                                <span
+                                  key={capIdx}
+                                  className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-blue-50 dark:bg-gray-700/80 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-gray-600"
+                                >
+                                  <Film className="w-2.5 h-2.5 shrink-0" />
+                                  <span>{cap}</span>
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                      </div>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openWhatsAppModal(`${product.title} (${product.price})`)
-                      }
-                      className="bg-gray-900 dark:bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-blue-600 dark:hover:bg-blue-700 transition shadow-sm cursor-pointer whitespace-nowrap"
-                    >
-                      Pilih Pakej
-                    </button>
+
+                    <div className="p-5 pt-4 flex items-center justify-between border-t border-gray-100 dark:border-gray-700/50 mt-4">
+                      <div>
+                        <span className="text-[10px] text-gray-400 block font-medium">
+                          Anggaran Harga
+                        </span>
+                        <span
+                          className={`text-sm font-extrabold tabular-nums ${accent.primaryText}`}
+                        >
+                          {product.price}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openWhatsAppModal(
+                            `${product.title} (${product.price})`
+                          )
+                        }
+                        className="bg-gray-900 dark:bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-blue-600 dark:hover:bg-blue-700 transition shadow-sm cursor-pointer whitespace-nowrap"
+                      >
+                        Pilih Pakej
+                      </button>
+                    </div>
                   </div>
-                </div>
+                </RevealOnScroll>
               ))}
             </div>
           </div>
@@ -681,7 +813,7 @@ export default function App() {
           className="py-16 bg-white dark:bg-gray-900 transition-colors border-t border-gray-100 dark:border-gray-800"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
+            <RevealOnScroll className="text-center mb-12">
               <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
                 Perbandingan Pakej Servis
               </h2>
@@ -692,60 +824,65 @@ export default function App() {
                 </span>
                 .
               </p>
-            </div>
+            </RevealOnScroll>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {COMPARISON_PACKAGES.map((pkg, idx) => (
-                <div
+                <RevealOnScroll
                   key={idx}
-                  className={`bg-gray-50 dark:bg-gray-800/50 p-6 rounded-2xl flex flex-col justify-between relative ${
-                    pkg.popular
-                      ? `border-2 ${accent.borderPopular} shadow-lg`
-                      : 'border border-gray-100 dark:border-gray-800 shadow-sm'
-                  }`}
+                  delayMs={idx * 120}
+                  className="h-full"
                 >
-                  {pkg.popular && (
-                    <span
-                      className={`absolute -top-3 left-1/2 -translate-x-1/2 ${accent.badgeBg} text-white text-[10px] font-bold px-3 py-1 rounded-md uppercase whitespace-nowrap`}
-                    >
-                      Paling Popular
-                    </span>
-                  )}
-
-                  <div>
-                    <span
-                      className={`text-xs font-bold uppercase ${accent.primaryText}`}
-                    >
-                      {pkg.categoryLabel}
-                    </span>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-1">
-                      {pkg.title}
-                    </h3>
-                    <p className="text-2xl font-extrabold text-gray-900 dark:text-white mt-4 tabular-nums">
-                      {pkg.price}
-                    </p>
-                    <ul className="mt-6 space-y-3 text-xs text-gray-600 dark:text-gray-300">
-                      {pkg.features.map((feat, fIdx) => (
-                        <li key={fIdx} className="flex items-center gap-2">
-                          <span className={accent.primaryText}>✓</span>
-                          <span>{feat}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => openWhatsAppModal(pkg.modalLabel)}
-                    className={`mt-8 w-full py-2.5 rounded-xl text-xs font-semibold text-white transition cursor-pointer ${
+                  <div
+                    className={`h-full bg-gray-50 dark:bg-gray-800/50 p-6 rounded-2xl flex flex-col justify-between relative ${
                       pkg.popular
-                        ? accent.primaryBg
-                        : 'bg-gray-900 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700'
+                        ? `border-2 ${accent.borderPopular} shadow-lg`
+                        : 'border border-gray-100 dark:border-gray-800 shadow-sm'
                     }`}
                   >
-                    Pilih Pakej
-                  </button>
-                </div>
+                    {pkg.popular && (
+                      <span
+                        className={`absolute -top-3 left-1/2 -translate-x-1/2 ${accent.badgeBg} text-white text-[10px] font-bold px-3 py-1 rounded-md uppercase whitespace-nowrap`}
+                      >
+                        Paling Popular
+                      </span>
+                    )}
+
+                    <div>
+                      <span
+                        className={`text-xs font-bold uppercase ${accent.primaryText}`}
+                      >
+                        {pkg.categoryLabel}
+                      </span>
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mt-1">
+                        {pkg.title}
+                      </h3>
+                      <p className="text-2xl font-extrabold text-gray-900 dark:text-white mt-4 tabular-nums">
+                        {pkg.price}
+                      </p>
+                      <ul className="mt-6 space-y-3 text-xs text-gray-600 dark:text-gray-300">
+                        {pkg.features.map((feat, fIdx) => (
+                          <li key={fIdx} className="flex items-center gap-2">
+                            <span className={accent.primaryText}>✓</span>
+                            <span>{feat}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => openWhatsAppModal(pkg.modalLabel)}
+                      className={`mt-8 w-full py-2.5 rounded-xl text-xs font-semibold text-white transition cursor-pointer ${
+                        pkg.popular
+                          ? accent.primaryBg
+                          : 'bg-gray-900 dark:bg-blue-600 hover:bg-blue-600 dark:hover:bg-blue-700'
+                      }`}
+                    >
+                      Pilih Pakej
+                    </button>
+                  </div>
+                </RevealOnScroll>
               ))}
             </div>
           </div>
@@ -757,7 +894,7 @@ export default function App() {
           className="py-16 bg-gray-50 dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 transition-colors"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
+            <RevealOnScroll className="text-center mb-12">
               <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white">
                 Apa Kata Klien Kami?
               </h2>
@@ -765,29 +902,32 @@ export default function App() {
                 Maklum balas daripada usahawan yang telah mendapatkan servis
                 kami.
               </p>
-            </div>
+            </RevealOnScroll>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {TESTIMONIALS.map((item, idx) => (
-                <div
+                <RevealOnScroll
                   key={idx}
-                  className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col justify-between shadow-sm"
+                  delayMs={idx * 130}
+                  className="h-full"
                 >
-                  <div>
-                    <div className="flex text-amber-400 mb-3 text-sm">
-                      ★★★★★
+                  <div className="h-full bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <div>
+                      <div className="flex text-amber-400 mb-3 text-sm">
+                        ★★★★★
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 italic leading-relaxed">
+                        {item.quote}
+                      </p>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 italic leading-relaxed">
-                      {item.quote}
-                    </p>
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <h4 className="font-bold text-sm text-gray-900 dark:text-white">
+                        {item.name}
+                      </h4>
+                      <span className="text-xs text-gray-400">{item.role}</span>
+                    </div>
                   </div>
-                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <h4 className="font-bold text-sm text-gray-900 dark:text-white">
-                      {item.name}
-                    </h4>
-                    <span className="text-xs text-gray-400">{item.role}</span>
-                  </div>
-                </div>
+                </RevealOnScroll>
               ))}
             </div>
           </div>
